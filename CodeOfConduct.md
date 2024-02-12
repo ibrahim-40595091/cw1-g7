@@ -29,4 +29,4 @@ Contributors' responsibilities include:
 - Supporting and resolving issues within the project and the team as quickly and effectively as possible
 
 ## Scope
-This Code of Conduct applies to all contributors, both within the project and in any spaces where the project is being developed or contributors are collaborating or working on the project.
+this Code of Conduct applies to all contributors, both within the project and in any spaces where the project is being developed or contributors are collaborating or working on the project.
