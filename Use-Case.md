@@ -1,4 +1,4 @@
-# USE CASE: Produce a Report on the 
+# USE CASE: Produce a Report on Countries  
 
 ## CHARACTERISTIC INFORMATION
 
