@@ -24,7 +24,7 @@ A report listing countries with specific columns is available for the organisati
 
 ### Failed End Condition
 
-No report is produced.
+no report is produced.
 
 ### Primary Actor
 
