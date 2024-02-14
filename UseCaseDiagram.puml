@@ -4,7 +4,7 @@ actor Org as "Organisation"
 
 rectangle WorldDB
 
-rectangle "Reporting System" {
+rectangle "Report System" {
     usecase UC1 as "Get country
     report"
 
