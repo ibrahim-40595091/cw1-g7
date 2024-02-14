@@ -4,7 +4,7 @@
 
 ### Goal in Context
 
-I want to generate a report as a *Organisation* that includes a list of different countries with specified rows and columns so that I can analyze demographic data easier.
+I want to generate a report as an *Organisation* that includes a list of different countries with specified rows and columns so that I can analyze demographic data easier.
 
 ### Scope
 
