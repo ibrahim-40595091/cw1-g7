@@ -1,0 +1,19 @@
+@startuml
+
+actor Org as "Organisation"
+
+rectangle WorldDB
+
+rectangle "Report System" {
+    usecase UC1 as "Get report on all countries
+    in a continent by
+    largest population to smallest"
+
+    usecase UCa as "Display report"
+
+    Org - UC1
+    UC1 ..> UCa : <<include>>
+    UC1 - WorldDB
+}
+
+@enduml
