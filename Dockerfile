@@ -1,4 +1,4 @@
 FROM openjdk:latest
-COPY target/Group7CW-0.1.0.2.jar /app/app.jar
+COPY .target/classes/com /tmp/com
 WORKDIR /tmp
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+ENTRYPOINT ["java", "com.napier.g7cw.Main"]
