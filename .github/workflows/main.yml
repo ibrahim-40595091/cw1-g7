@@ -13,8 +13,6 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt'
-      - name: Compile with Maven
-        run: mvn compile
       - name: Package with Maven
         run: mvn Package
       - name: Build Docker Image
