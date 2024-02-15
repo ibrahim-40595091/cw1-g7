@@ -1,0 +1,20 @@
+@startuml
+
+actor Org as "Organisation"
+
+rectangle WorldDB
+
+rectangle "Report System" {
+    usecase UC1 as "Get report on the number people who speak the following
+    languages, Chinese, English, Hindi, Spanish and Arabic from the greatest number
+    of speakers to smallest including percentage
+    of the world population that speaks these languages"
+
+    usecase UCa as "Display report"
+
+    Org - UC1
+    UC1 ..> UCa : <<include>>
+    UC1 - WorldDB
+}
+
+@enduml
