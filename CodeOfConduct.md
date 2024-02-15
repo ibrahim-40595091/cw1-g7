@@ -12,4 +12,4 @@ We as contributors pledge to make participation in this project a free and fair 
 - Support the team and project when problems arise
 
 ## Scope
-This Code of Conduct applies to all contributors, both within the project and in any spaces where the project is being developed or contributors are collaborating or working on the project.
+this Code of Conduct applies to all contributors, both within the project and in any spaces where the project is being developed or contributors are collaborating or working on the project.
