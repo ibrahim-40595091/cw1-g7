@@ -1,0 +1,11 @@
+version: '3'
+services:
+    # Application Dockerfile is in the same folder .
+    app:
+        build: .
+
+    # sql Dockerfile is in the folder sql_db/
+    sql_db:
+        build: sql_db/.
+        command: --default-authentication-plugin=mysql_native_password
+        restart: always # So the database is always fresh
