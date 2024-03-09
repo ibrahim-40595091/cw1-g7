@@ -8,4 +8,4 @@ services:
     sql_db:
         build: sql_db/.
         command: --default-authentication-plugin=mysql_native_password
-        restart: always # So the database is always fresh
+        restart: always # So the container restarts if it crashes
