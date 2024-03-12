@@ -15,9 +15,4 @@ public class AppTest {
     static void init() {
         app = new App();
     }
-
-    @Test
-    void test_testerFunction() {
-        app.testerFunction(1);
-    }
 }
