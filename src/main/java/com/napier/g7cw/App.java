@@ -27,4 +27,13 @@ public class App {
         System.out.println(myDoc.toJson());
     }
 
+    void testerFunction(int in) {
+        switch (in) {
+            case 1:
+                System.out.println("Input 1");
+                break;
+            default:
+                throw new RuntimeException(new Exception("Fail"));
+        }
+    }
 }
