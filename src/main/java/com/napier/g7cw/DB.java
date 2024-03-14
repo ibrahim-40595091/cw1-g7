@@ -2,6 +2,7 @@ package com.napier.g7cw;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DB {
     Connection con = null;
@@ -28,7 +29,8 @@ public class DB {
         for (int i = 0; i < retries; ++i) {
             System.out.println("Connecting to database...");
             try {
-                // Note: no longer need to wait for db to start - docker compose ensures this app only starts if db is running
+                // Wait for DB to start
+                Thread.sleep(1000);
                 // Connect to database
                 con = DriverManager.getConnection("jdbc:mysql://sql_db:3306/world?useSSL=false", "root", "password");
                 if (con != null) {
@@ -37,6 +39,8 @@ public class DB {
                 }
             } catch (SQLException e) {
                 System.out.println("Failed to connect to database on attempt " + i);
+            } catch (InterruptedException e) {
+                System.out.println("Thread interrupted.");
             }
         }
 
@@ -66,25 +70,41 @@ public class DB {
 
 
     /**
-     * Gets first 10 cities in GBR by population
+     * Get the details of a capital city
+     *
+     * @return
      */
-    public ArrayList<String> getCityPopulation() {
-        ArrayList<String> cities = new ArrayList<>();
+    public HashMap<String, String> getCapitalCity(String capital) {
+        HashMap<String, String> capitalCity = new HashMap<String, String>();
+        capitalCity.put("Name", null);
+        capitalCity.put("Country", null);
+        capitalCity.put("Population", null);
 
-        if (!testConnection()) { return cities; }
 
-        String query = "SELECT Name FROM city WHERE CountryCode = 'GBR' ORDER BY Population DESC LIMIT 10";
         try {
+            // Create an SQL statement
             Statement stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery(query);
-            while (res.next()) {
-                cities.add(res.getString("Name"));
+            // Create string for SQL statement
+            String strSelect = "SELECT country.Name, city.Name, city.Population FROM country, city WHERE city.Name = '" + capital + "' AND country.Capital = city.ID";
+            // Execute SQL statement
+            ResultSet rset = stmt.executeQuery(strSelect);
+
+            // Extract city information
+            if (!rset.next()) {
+                throw new RuntimeException("No city found");
             }
+
+            capitalCity.put("Name", rset.getString("city.Name"));
+            capitalCity.put("Country", rset.getString("country.Name"));
+            capitalCity.put("Population", rset.getString("city.Population"));
         } catch (Exception e) {
-            System.out.println("Error executing query. Error message: \n" + e.getMessage());
+            System.out.println("Failed to get city details");
+            System.out.println(e.getMessage());
         }
-        return cities;
+
+        return capitalCity;
     }
+
 
     private boolean testConnection() {
         if (con == null) {
