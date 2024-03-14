@@ -1,6 +1,5 @@
 package com.napier.g7cw;
 
-import java.sql.*;
 import java.util.HashMap;
 
 public class App {
