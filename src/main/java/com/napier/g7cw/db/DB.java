@@ -113,4 +113,20 @@ public class DB {
         // i.e. there is already a connection
         return true;
     }
+
+
+    /**
+     * For testing only. Allows for custom SQL queries to be run on the database.
+     * @param sql
+     * The query to be executed
+     * @return
+     * A {@link ResultSet} object that contains the data produced by the given query; never null
+     * @throws SQLException
+     * If a database access error occurs
+     */
+    public ResultSet customQuery(String sql) throws SQLException {
+        Statement stmt = con.createStatement();
+        stmt.executeQuery(sql);
+        return stmt.getResultSet();
+    }
 }
