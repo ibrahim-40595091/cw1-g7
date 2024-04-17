@@ -1,9 +1,6 @@
 package com.napier.g7cw.obj;
 
-import com.napier.g7cw.db.DB;
-import com.napier.g7cw.db.CityDBA;
-import com.napier.g7cw.db.CountryLanguagesDBA;
-import com.napier.g7cw.db.CountryDBA;
+import com.napier.g7cw.db.*;
 
 
 /**
@@ -32,7 +29,7 @@ public class Report {
      * @param c
      * The provided city to generate a report for
      * @return
-     * A string containing a
+     * A string containing the report generated
      */
     public String generate(City c) {
         lastGenerated = "City Report:\n" +
@@ -41,6 +38,88 @@ public class Report {
                 "\tCountry: " + CountryDBA.getCountry(db, c.CountryCode).LocalName + "\n" +
                 "\tDistrict: " + c.District + "\n" +
                 "\tPopulation: " + c.Population + "\n";
+        return lastGenerated;
+    }
+
+
+    /**
+     * Report generator for continents
+     * @param c
+     * The provided continent to generate a report for
+     * @return
+     * A string containing the report generated
+     */
+    public String generate(Continent c) {
+        lastGenerated = "Continent: " + c.Name;
+        return lastGenerated;
+    }
+
+
+    /**
+     * Report generator for country
+     * @param c
+     * The provided country to generate a report for
+     * @return
+     * A string containing the report generated
+     */
+    public String generate(Country c) {
+        Report capitalReport = new Report(db);
+        Report countryLanguagesReport = new Report(db);
+        capitalReport.generate(c.Capital);
+        lastGenerated = "Country Report:\n" +
+                "\tName: " + c.Name + "\n" +
+                "\tContinent: " + c.Continent + "\n" +
+                "\tRegion: " + c.Region + "\n" +
+                "\tSurface Area: " + c.SurfaceArea + "\n" +
+                "\tIndependence Year: " + c.IndepYear + "\n" +
+                "\tPopulation: " + c.Population + "\n" +
+                "\tLife Expectancy: " + c.LifeExpectancy + "\n" +
+                "\tGNP: " + c.GNP + "\n" +
+                "\tGNP Old: " + c.GNPOld + "\n" +
+                "\tGovernment: " + c.LocalName + "\n" +
+                "\tHead of State: " + c.LocalName + "\n" +
+                "\tCapital: " + capitalReport.generate(c.Capital) + "\n" +
+                "\tLanguages: " + capitalReport.generate(c.Languages) + "\n";
+        return lastGenerated;
+    }
+
+
+    /**
+     * Report generator for country languages
+     * @param cl
+     * The provided languages to generate a report for
+     * @return
+     * A string containing the report generated
+     */
+    public String generate(CountryLanguages cl) {
+        lastGenerated = "Country Languages Report:\n" +
+                "\tCountry Code: " + cl.CountryCode + "\n" +
+                "\tOfficial Languages:\n";
+        for (Language l : cl.Official) {
+            lastGenerated += "\t\t" + l.Name + " (" + l.Percentage + "%)\n";
+        }
+        lastGenerated += "\tOther Languages:\n";
+        for (Language l : cl.Other) {
+            lastGenerated += "\t\t" + l.Name + " (" + l.Percentage + "%)\n";
+        }
+
+        return lastGenerated;
+    }
+
+
+    /**
+     * Report generator for a single language
+     * @param l
+     * The provided languages to generate a report for
+     * @return
+     * A string containing the report generated
+     */
+    public String generate(Language l) {
+        lastGenerated = "Langauage Report:\n" +
+                "\tName: " + l.Name + "\n" +
+                "\tCountry Code: " + l.CountryCode + "\n" +
+                "\tIs Official: " + l.IsOfficial + "\n" +
+                "\tPercentage: " + l.Percentage + "\n";
         return lastGenerated;
     }
 

@@ -1,5 +1,9 @@
 package com.napier.g7cw;
 
+import com.napier.g7cw.db.*;
+import com.napier.g7cw.obj.City;
+import com.napier.g7cw.obj.Report;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,14 +42,16 @@ public class App {
         }
 
         // Do stuff
-        HashMap<String, String> london = db.getCapitalCity("London");
-        String capitalCityReport = generateReport(london);
-        System.out.println(capitalCityReport);
+        City london = CityDBA.getCityByName(db, "London");
+        if (london == null) {
+            System.out.println("City not found.");
+            db.disconnect();
+            return;
+        }
+        Report report = new Report(db);
+        String cityReport = report.generate(london);
+        System.out.println(cityReport);
 
         db.disconnect();
-    }
-
-    public static ArrayList<String> getCitiesByPopulation() {
-        return new ArrayList<>(List.of(new String[]{"London", "Paris", "New York"}));
     }
 }

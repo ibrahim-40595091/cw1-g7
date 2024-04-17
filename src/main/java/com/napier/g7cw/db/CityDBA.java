@@ -30,16 +30,53 @@ public class CityDBA {
             }
 
             City c = new City(
-                rs.getInt("ID"),
-                rs.getString("Name"),
-                rs.getString("CountryCode"),
-                rs.getString("District"),
-                rs.getInt("Population")
+                    rs.getInt("ID"),
+                    rs.getString("Name"),
+                    rs.getString("CountryCode"),
+                    rs.getString("District"),
+                    rs.getInt("Population")
             );
 
             return c;
         } catch (SQLException sqle) {
             System.out.println("Failed to get city with ID " + ID);
+            System.out.println(sqle.getMessage());
+        }
+
+        return null;
+    }
+
+    /**
+     * Fetch a city from the database by name
+     * @param db
+     * The database to fetch from
+     * @param name
+     * The city name
+     * @returns
+     * The city fetched from the database, otherwise null
+     */
+    public static City getCityByName(DB db, String name){
+        try {
+            Statement stmt = db.con.createStatement();
+            String query = "SELECT * FROM city WHERE Name = '" + name + "'";
+            ResultSet rs = stmt.executeQuery(query);
+
+            if (!rs.next()) {
+                System.out.println("City " + name + " not found.");
+                return null;
+            }
+
+            City c = new City(
+                    rs.getInt("ID"),
+                    rs.getString("Name"),
+                    rs.getString("CountryCode"),
+                    rs.getString("District"),
+                    rs.getInt("Population")
+            );
+
+            return c;
+        } catch (SQLException sqle) {
+            System.out.println("Failed to get city " + name);
             System.out.println(sqle.getMessage());
         }
 

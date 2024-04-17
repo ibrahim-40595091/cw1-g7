@@ -1,4 +1,4 @@
-package com.napier.g7cw;
+package com.napier.g7cw.db;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -71,6 +71,33 @@ public class DB {
             }
         }
         return false;
+    }
+
+
+    /**
+     * Fetch a capital city from the database
+     * @param name
+     * The name of the capital city to fetch
+     * @return
+     * A {@link HashMap} object that contains the data of the capital city
+     */
+    public HashMap<String, String> getCapitalCity(String name) {
+        HashMap<String, String> capitalCity = new HashMap<>();
+
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM city WHERE Name = '" + name + "'");
+            if (rs.next()) {
+                capitalCity.put("Name", rs.getString("Name"));
+                capitalCity.put("Country", rs.getString("CountryCode"));
+                capitalCity.put("Population", rs.getString("Population"));
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to get capital city " + name);
+            System.out.println(e.getMessage());
+        }
+
+        return capitalCity;
     }
 
 

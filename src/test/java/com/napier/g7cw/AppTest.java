@@ -1,5 +1,6 @@
 package com.napier.g7cw;
 
+import com.napier.g7cw.obj.Report;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
