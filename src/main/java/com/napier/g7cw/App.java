@@ -1,6 +1,8 @@
 package com.napier.g7cw;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class App {
     static DB db = null;
@@ -41,5 +43,9 @@ public class App {
         System.out.println(capitalCityReport);
 
         db.disconnect();
+    }
+
+    public static ArrayList<String> getCitiesByPopulation() {
+        return new ArrayList<>(List.of(new String[]{"London", "Paris", "New York"}));
     }
 }

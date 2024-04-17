@@ -2,9 +2,11 @@ package com.napier.g7cw;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class AppTest {
 
@@ -22,6 +24,7 @@ public class AppTest {
         db.connect();
         App.db = db;
     }
+    */
 
 
 
@@ -32,7 +35,7 @@ public class AppTest {
     }
 
 
-
+    /*
     @AfterAll
     static void de_init() {
         db.disconnect();
