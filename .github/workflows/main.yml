@@ -4,6 +4,7 @@ on:
     branches:
       - master
       - Develop
+      - feature/*
 
 jobs:
   UnitTests:
