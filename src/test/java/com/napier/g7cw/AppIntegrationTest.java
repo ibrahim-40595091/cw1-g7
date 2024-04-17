@@ -22,6 +22,7 @@ public class AppIntegrationTest {
     @Test
     void testGetCity() {
         City city = CityDBA.getCityByName(db, "London");
+        assertNotNull(city);
         assertEquals("London", city.Name);
         assertEquals("GBR", city.CountryCode);
         assertEquals("England", city.District);

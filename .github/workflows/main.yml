@@ -40,7 +40,7 @@ jobs:
         run: |
           docker build -t database ./sql_db
           docker run --name g7cw -dp 33060:3306 database
-          nvm -Dtest=com.napier.g7cw.AppIntegrationTest test
+          mvn -Dtest=com.napier.g7cw.AppIntegrationTest test
           docker stop g7cw
           docker rm g7cw
           docker image rm database
