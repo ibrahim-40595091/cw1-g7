@@ -14,7 +14,7 @@ public class DB {
      *
      * @return boolean - True if connection was successful, false otherwise.
      */
-    public boolean connect() {
+    public boolean connect(String location, int delay) {
         try {
             // Load database driver
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -26,19 +26,21 @@ public class DB {
         // Connection to database
         con = null;
         int retries = 10;
+        boolean wait = false;
         for (int i = 0; i < retries; ++i) {
             System.out.println("Connecting to database...");
             try {
                 // Wait for DB to start
-                Thread.sleep(1000);
-                // Connect to database
-                con = DriverManager.getConnection("jdbc:mysql://sql_db:3306/world?useSSL=false", "root", "password");
+                if (wait) { Thread.sleep(delay); }
+
+                // Connect to database - default location sql_db:3306
+                con = DriverManager.getConnection("jdbc:mysql://" + location + "/world?useSSL=false", "root", "password");
                 if (con != null) {
                     System.out.println("Connected to database");
                     return true;
                 }
             } catch (SQLException e) {
-                System.out.println("Failed to connect to database on attempt " + i);
+                wait = true;
             } catch (InterruptedException e) {
                 System.out.println("Thread interrupted.");
             }
@@ -106,9 +108,9 @@ public class DB {
     }
 
 
-    private boolean testConnection() {
+    private boolean testConnection(String location, int delay) {
         if (con == null) {
-            return connect();
+            return connect(location, delay);
         }
         // i.e. there is already a connection
         return true;

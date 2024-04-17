@@ -28,7 +28,12 @@ public class App {
     public static void main(String[] args)
     {
         db = new DB();
-        db.connect();
+
+        if (args.length < 1) {
+            db.connect("localhost:33060", 10000);
+        } else {
+            db.connect(args[0], Integer.parseInt(args[1]));
+        }
 
         // Do stuff
         HashMap<String, String> london = db.getCapitalCity("London");
