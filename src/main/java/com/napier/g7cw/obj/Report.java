@@ -36,7 +36,6 @@ public class Report {
                 "\tName: " + c.Name + "\n" +
                 // Use countryCode to get country from database
                 "\tCountry: " + CountryDBA.getCountry(db, c.CountryCode).LocalName + "\n" +
-                "\tDistrict: " + c.District + "\n" +
                 "\tPopulation: " + c.Population + "\n";
         return lastGenerated;
     }
@@ -67,19 +66,11 @@ public class Report {
         Report countryLanguagesReport = new Report(db);
         capitalReport.generate(c.Capital);
         lastGenerated = "Country Report:\n" +
+                "\tCode: " + c.Code + "\n" +
                 "\tName: " + c.Name + "\n" +
                 "\tContinent: " + c.Continent + "\n" +
                 "\tRegion: " + c.Region + "\n" +
-                "\tSurface Area: " + c.SurfaceArea + "\n" +
-                "\tIndependence Year: " + c.IndepYear + "\n" +
-                "\tPopulation: " + c.Population + "\n" +
-                "\tLife Expectancy: " + c.LifeExpectancy + "\n" +
-                "\tGNP: " + c.GNP + "\n" +
-                "\tGNP Old: " + c.GNPOld + "\n" +
-                "\tGovernment: " + c.LocalName + "\n" +
-                "\tHead of State: " + c.LocalName + "\n" +
-                "\tCapital: " + capitalReport.generate(c.Capital) + "\n" +
-                "\tLanguages: " + capitalReport.generate(c.Languages) + "\n";
+                "\tCapital: " + capitalReport.generate(c.Capital) + "\n";
         return lastGenerated;
     }
 
