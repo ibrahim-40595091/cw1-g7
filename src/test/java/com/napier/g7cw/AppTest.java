@@ -1,6 +1,11 @@
 package com.napier.g7cw;
 
+import com.napier.g7cw.db.CityDBA;
+import com.napier.g7cw.db.DB;
+import com.napier.g7cw.obj.City;
 import com.napier.g7cw.obj.Report;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -16,32 +21,32 @@ public class AppTest {
     // Keeping this code in case we need it in future
     // Intention is to test whether the DB is connecting/returning data/disconnecting correctly
     // Currently only testing whether the functions can process the raw DB data correctly
-    /*
     static DB db;
 
     @BeforeEach
     void init() {
         db = new DB();
-        db.connect();
+        db.connect("localhost:33060", 10000);
         App.db = db;
     }
-    */
 
 
 
     @Test
-    void test_getCityPopulation() {
-        ArrayList<String> cities = App.getCitiesByPopulation();
-        assertNotNull(cities);
+    void testGetCity() {
+        City city = CityDBA.getCityByName(db, "London");
+        assertNotNull(city);
+        assertEquals("London", city.Name);
+        assertEquals("GBR", city.CountryCode);
+        assertEquals("England", city.District);
+        assertEquals(7285000, city.Population);
     }
 
 
-    /*
     @AfterAll
     static void de_init() {
         db.disconnect();
     }
-    */
 
 
 }
