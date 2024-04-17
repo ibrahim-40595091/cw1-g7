@@ -1,4 +1,4 @@
-package com.napier.g7cw.db;
+package com.napier.g7cw;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public class DB {
      *
      * @return boolean - True if connection was successful, false otherwise.
      */
-    public boolean connect() {
+    public boolean connect(String location, int delay) {
         try {
             // Load database driver
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -29,21 +29,21 @@ public class DB {
         // Connection to database
         con = null;
         int retries = 10;
+        boolean wait = false;
         for (int i = 0; i < retries; ++i) {
             System.out.println("Connecting to database...");
             try {
-                // Connect to database
-                // On the first attempt, this connects immediately if the database is already running
-                con = DriverManager.getConnection("jdbc:mysql://sql_db:3306/world?useSSL=false", "root", "password");
+                // Wait for DB to start
+                if (wait) { Thread.sleep(delay); }
+
+                // Connect to database - default location sql_db:3306
+                con = DriverManager.getConnection("jdbc:mysql://" + location + "/world?useSSL=false", "root", "password");
                 if (con != null) {
                     System.out.println("Connected to database");
                     return true;
                 }
-
-                // Wait for DB to start
-                Thread.sleep(30000);
             } catch (SQLException e) {
-                System.out.println("Failed to connect to database on attempt " + i);
+                wait = true;
             } catch (InterruptedException e) {
                 System.out.println("Thread interrupted.");
             }
@@ -97,9 +97,9 @@ public class DB {
 
 
 
-    private boolean testConnection() {
+    private boolean testConnection(String location, int delay) {
         if (con == null) {
-            return connect();
+            return connect(location, delay);
         }
         // i.e. there is already a connection
         return true;

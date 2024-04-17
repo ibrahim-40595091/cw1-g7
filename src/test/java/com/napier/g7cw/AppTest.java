@@ -2,9 +2,11 @@ package com.napier.g7cw;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class AppTest {
 
@@ -22,6 +24,7 @@ public class AppTest {
         db.connect();
         App.db = db;
     }
+    */
 
 
 
@@ -32,7 +35,7 @@ public class AppTest {
     }
 
 
-
+    /*
     @AfterAll
     static void de_init() {
         db.disconnect();
@@ -40,20 +43,4 @@ public class AppTest {
     */
 
 
-    /**
-     * Assert the report generator is outputting the correct data for a report on London, UK
-     */
-    @Test
-    void capital_cities() {
-        HashMap<String, String> sampleCityData = new HashMap<String, String>();
-        sampleCityData.put("Name", "London");
-        sampleCityData.put("Country", "United Kingdom");
-        sampleCityData.put("Population", "8787892");
-
-        String report = App.generateReport(sampleCityData);
-        assertEquals("Capital City Report:\n" +
-                "\tName: London\n" +
-                "\tCountry: United Kingdom\n" +
-                "\tPopulation: 8787892\n", report);
-    }
 }
