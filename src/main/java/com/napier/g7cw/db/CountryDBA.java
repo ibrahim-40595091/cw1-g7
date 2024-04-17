@@ -5,6 +5,7 @@ import com.napier.g7cw.obj.Continent;
 import com.napier.g7cw.obj.Country;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 /**
  * Utility object to fetch country data from the database - "Country DataBase Access"
@@ -38,6 +39,75 @@ public class CountryDBA {
 
 
     /**
+     * Fetches all countries from the database, and sorts them by population
+     */
+    public static ArrayList<Country> getAllCountries(DB db, boolean largestFirst) {
+        try {
+            Statement stmt = db.con.createStatement();
+            String query = "SELECT * FROM country ORDER BY Population " + (largestFirst ? "DESC" : "ASC") + ";";
+            ResultSet rs = stmt.executeQuery(query);
+
+            ArrayList<Country> countries = new ArrayList<>();
+            while (rs.next()) {
+                countries.add(countryFromResultSet(db, rs));
+            }
+
+            return countries;
+        } catch (SQLException sqle) {
+            System.out.println("SQL Error.");
+            System.out.println(sqle.getMessage());
+        }
+        return null;
+    }
+
+
+    /**
+     * Gets all countries in the provided continent, sorted by population
+     */
+    public static ArrayList<Country> getCountriesByContinent(DB db, String continent, boolean largestFirst) {
+        try {
+            Statement stmt = db.con.createStatement();
+            String query = "SELECT * FROM country WHERE Continent = '" + continent + "' ORDER BY Population " + (largestFirst ? "DESC" : "ASC") + ";";
+            ResultSet rs = stmt.executeQuery(query);
+
+            ArrayList<Country> countries = new ArrayList<>();
+            while (rs.next()) {
+                countries.add(countryFromResultSet(db, rs));
+            }
+
+            return countries;
+        } catch (SQLException sqle) {
+            System.out.println("SQL Error.");
+            System.out.println(sqle.getMessage());
+        }
+        return null;
+    }
+
+
+    /**
+     * Gets all countries in the provided region, sorted by population
+     */
+    public static ArrayList<Country> getCountriesByRegion(DB db, String region, boolean largestFirst) {
+        try {
+            Statement stmt = db.con.createStatement();
+            String query = "SELECT * FROM country WHERE Region = '" + region + "' ORDER BY Population " + (largestFirst ? "DESC" : "ASC") + ";";
+            ResultSet rs = stmt.executeQuery(query);
+
+            ArrayList<Country> countries = new ArrayList<>();
+            while (rs.next()) {
+                countries.add(countryFromResultSet(db, rs));
+            }
+
+            return countries;
+        } catch (SQLException sqle) {
+            System.out.println("SQL Error.");
+            System.out.println(sqle.getMessage());
+        }
+        return null;
+    }
+
+
+    /**
      * Generates a country object using ResultSet data
      * @param db
      * {@link DB Database} object so extra information can be fetched as-needed
@@ -48,6 +118,12 @@ public class CountryDBA {
      */
     private static Country countryFromResultSet(DB db, ResultSet rs) {
         try {
+            // Check city has a capital
+            int capital_id = rs.getInt("Capital");
+            City capital;
+            if (capital_id == 0) { capital = City.NULL_CITY; }
+            else { capital = CityDBA.getCityByID(db, capital_id); }
+
             Country c = new Country(
                     rs.getString("Code"),
                     rs.getString("Name"),
@@ -62,7 +138,7 @@ public class CountryDBA {
                     rs.getString("LocalName"),
                     rs.getString("GovernmentForm"),
                     rs.getString("HeadOfState"),
-                    CityDBA.getCityByID(db, rs.getInt("Capital")),
+                    capital,
                     rs.getString("Code2"),
                     CountryLanguagesDBA.getCountryLanguage(db, rs.getString("Code"))
             );

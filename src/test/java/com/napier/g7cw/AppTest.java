@@ -32,10 +32,6 @@ public class AppTest {
 */
 
 
-    @Test
-    void testGetCity() {
-        return;
-    }
 
     /*
     @AfterAll

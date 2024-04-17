@@ -9,26 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class App {
-    static DB db = null;
-
-
-    /**
-     * Generates a capital city report using HashMap data taken from the database
-     * @param data
-     * The data fetched from the database using class DB
-     * @return String
-     * The report generated as a String
-     */
-    public static String generateReport(HashMap<String, String> data)
-    {
-        String out;
-        out = "Capital City Report:\n" +
-                "\tName: " + data.get("Name") + "\n" +
-                "\tCountry: " + data.get("Country") + "\n" +
-                "\tPopulation: " + data.get("Population") + "\n";
-
-        return out;
-    }
+    static DB db;
 
 
     public static void main(String[] args)
@@ -41,16 +22,9 @@ public class App {
             db.connect(args[0], Integer.parseInt(args[1]));
         }
 
-        // Do stuff
-        City london = CityDBA.getCityByName(db, "London");
-        if (london == null) {
-            System.out.println("City not found.");
-            db.disconnect();
-            return;
-        }
         Report report = new Report(db);
-        String cityReport = report.generate(london);
-        System.out.println(cityReport);
+        report.getContinentCapitalCitiesSortPopulation("Europe", true, 10);
+        report.display();
 
         db.disconnect();
     }

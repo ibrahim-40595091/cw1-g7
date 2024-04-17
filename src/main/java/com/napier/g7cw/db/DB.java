@@ -71,58 +71,7 @@ public class DB {
             }
         }
         return false;
-    }
-
-
-    /**
-     * Fetch a capital city from the database
-     * @param name
-     * The name of the capital city to fetch
-     * @return
-     * A {@link HashMap} object that contains the data of the capital city
-     */
-    public HashMap<String, String> getCapitalCity(String name) {
-        HashMap<String, String> capitalCity = new HashMap<>();
-
-        try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM city WHERE Name = '" + name + "'");
-            if (rs.next()) {
-                capitalCity.put("Name", rs.getString("Name"));
-                capitalCity.put("Country", rs.getString("CountryCode"));
-                capitalCity.put("Population", rs.getString("Population"));
-            }
-        } catch (Exception e) {
-            System.out.println("Failed to get capital city " + name);
-            System.out.println(e.getMessage());
-        }
-
-        return capitalCity;
-    }
-
-
-    /**
-     * Fetch top N populated capital cities from the database, in a particular area of the world
-     * @param n
-     * The number of capital cities to
-     * @param areaType
-     * @param area
-     * @return
-     */
-    public ArrayList<HashMap<String, String>> topNCapitalCities(int n, String areaType, String area) {
-        ArrayList<HashMap<String, String>> capitalCities = new ArrayList<>();
-
-        try {
-
-        } catch (Exception e) {
-            System.out.println("Failed to get top " + n + " capital cities in " + area);
-            System.out.println(e.getMessage());
-        }
-
-        return capitalCities;
-    }
-
-
+    };
 
     private boolean testConnection(String location, int delay) {
         if (con == null) {

@@ -1,6 +1,7 @@
 package com.napier.g7cw.obj;
 
 public class City {
+    public static final City NULL_CITY = new City(-1, "NULL", "NULL", "NULL", -1);
     public final int ID;
     public final String Name;
     public final String CountryCode;

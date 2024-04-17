@@ -25,9 +25,9 @@ public class CountryLanguagesDBA {
             ResultSet rs = stmt.executeQuery(query);
 
             if (!rs.next()) {
-                System.out.println("Country Code " + countryCode + " not found.");
-                return null;
+                return new CountryLanguages(countryCode, new ArrayList<>());
             }
+
             ArrayList<Language> countryLanguagesArrayList = new ArrayList<>();
             do {
                 countryLanguagesArrayList.add(
