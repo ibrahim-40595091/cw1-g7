@@ -78,6 +78,9 @@ public class CityDBA {
         } catch (SQLException sqle) {
             System.out.println("Failed to get city " + name);
             System.out.println(sqle.getMessage());
+        } catch (Exception e) {
+            System.out.println("Failed to get city " + name);
+            System.out.println(e.getMessage());
         }
 
         return null;
