@@ -1,10 +1,5 @@
 name: Workflow for Coursework Project
-on:
-  push:
-    branches:
-      - master
-      - Develop
-      - feature/*
+on: push
 
 jobs:
   UnitTests:
@@ -40,6 +35,7 @@ jobs:
         run: |
           docker build -t database ./sql_db
           docker run --name g7cw -dp 33060:3306 database
+          sleep 30
           mvn -Dtest=com.napier.g7cw.AppIntegrationTest test
           docker stop g7cw
           docker rm g7cw

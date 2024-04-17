@@ -3,9 +3,6 @@ services:
     # Application Dockerfile is in the same folder .
     app:
         build: .
-        depends_on:
-            sql_db:
-                condition: service_healthy # Courtesy of GitHub Copilot GPT "Help me ensure app depends on sql_db"
 
     # sql Dockerfile is in the folder sql_db/
     sql_db:
