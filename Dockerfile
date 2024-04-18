@@ -7,4 +7,4 @@ COPY target/G7CW.jar /tmp
 WORKDIR /tmp
 
 # Define the entry point for running the application
-ENTRYPOINT ["java", "-jar", "G7CW.jar", "sql_db:3306", "10000"]
+ENTRYPOINT ["java", "-jar", "G7CW.jar", "localhost:33060", "10000"]

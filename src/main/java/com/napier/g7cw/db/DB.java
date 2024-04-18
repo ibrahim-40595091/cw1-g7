@@ -37,7 +37,7 @@ public class DB {
                 if (wait) { Thread.sleep(delay); }
 
                 // Connect to database - default location sql_db:3306
-                con = DriverManager.getConnection("jdbc:mysql://" + location + "/world?useSSL=false", "root", "password");
+                con = DriverManager.getConnection("jdbc:mysql://" + location + "/world?allowPublicKeyRetrieval=true&useSSL=false", "root", "password");
                 if (con != null) {
                     System.out.println("Connected to database");
                     return true;
