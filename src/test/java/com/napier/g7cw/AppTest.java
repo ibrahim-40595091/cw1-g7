@@ -25,8 +25,8 @@ public class AppTest {
         - Docker containers and databases don't seem to work with it */
     @BeforeAll
     static void init() {
-//        db = new DB();
-//        db.connect("localhost:33060", 10000);
+        db = new DB();
+        db.connect("localhost:33060", 10000);
     }
 
 
