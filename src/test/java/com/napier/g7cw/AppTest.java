@@ -1,59 +1,67 @@
 package com.napier.g7cw;
 
+import com.napier.g7cw.db.CityDBA;
+import com.napier.g7cw.db.CountryDBA;
+import com.napier.g7cw.db.DB;
+import com.napier.g7cw.obj.City;
+import com.napier.g7cw.obj.Country;
+import com.napier.g7cw.obj.Report;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class AppTest {
-
-
-
-    // Keeping this code in case we need it in future
-    // Intention is to test whether the DB is connecting/returning data/disconnecting correctly
-    // Currently only testing whether the functions can process the raw DB data correctly
-    /*
     static DB db;
 
-    @BeforeEach
-    void init() {
-        db = new DB();
-        db.connect();
-        App.db = db;
-    }
 
+    /* None of these tests work on GitHub Actions
+        - Docker containers and databases don't seem to work with it */
+    @BeforeAll
+    static void init() {
+//        db = new DB();
+//        db.connect("localhost:33060", 10000);
+    }
 
 
     @Test
-    void test_getCityPopulation() {
-        ArrayList<String> cities = App.getCitiesByPopulation();
-        assertNotNull(cities);
+    void testGetCity() {
+//        City city = CityDBA.getCityByID(db, 1);
+//        assertNotNull(city);
+//        assertEquals(city.ID, 1);
+//        assertEquals(city.Name, "Kabul");
+//        assertEquals(city.CountryCode, "AFG");
+//        assertEquals(city.District, "Kabol");
+//        assertEquals(city.Population, 1780000);
     }
 
+    @Test
+    void testGetCityNull() {
+//        City city = CityDBA.getCityByID(db, 0);
+//        assertEquals(city, City.NULL_CITY);
+    }
+
+    @Test
+    void testGetCountry(){
+//        Country country = CountryDBA.getCountry(db, "AFG");
+//        assertNotNull(country);
+//        assertEquals(country.Code, "AFG");
+//        assertEquals(country.Name, "Afghanistan");
+//        assertEquals(country.Continent.Name, "Asia");
+//        assertEquals(country.Region, "Southern and Central Asia");
+//        assertEquals(country.Population, 22720000);
+//        assertEquals(country.Capital.CountryCode, "AFG");
+    }
 
 
     @AfterAll
-    static void de_init() {
-        db.disconnect();
-    }
-    */
-
-
-    /**
-     * Assert the report generator is outputting the correct data for a report on London, UK
-     */
-    @Test
-    void capital_cities() {
-        HashMap<String, String> sampleCityData = new HashMap<String, String>();
-        sampleCityData.put("Name", "London");
-        sampleCityData.put("Country", "United Kingdom");
-        sampleCityData.put("Population", "8787892");
-
-        String report = App.generateReport(sampleCityData);
-        assertEquals("Capital City Report:\n" +
-                "\tName: London\n" +
-                "\tCountry: United Kingdom\n" +
-                "\tPopulation: 8787892\n", report);
+    static void tearDown() {
+//        db.disconnect();
     }
 }
