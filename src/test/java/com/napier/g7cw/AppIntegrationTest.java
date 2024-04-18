@@ -15,7 +15,7 @@ public class AppIntegrationTest {
     @BeforeAll
     static void init() {
         db = new DB();
-        db.connect("cw1-g7_sql_db_1:3306", 10000);
+        db.connect("localhost:33060", 10000);
     }
 
     @Test
