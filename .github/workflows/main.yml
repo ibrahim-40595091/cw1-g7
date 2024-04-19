@@ -51,6 +51,7 @@ jobs:
           directory: ./target/site/jacoco
           flags: Integration Tests # optional
           verbose: true # optional (default = false)
+          slug: ibrahim-40595091/cw1-g7
 
   build:
     name: Build and Start Using docker-compose
