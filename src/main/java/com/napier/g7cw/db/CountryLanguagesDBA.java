@@ -77,4 +77,52 @@ public class CountryLanguagesDBA {
 
         return allCountryLanguages;
     }
+
+
+    /**
+     * Fetches all languages by a specific name, from all countries which use that language
+     * @param db
+     * The database to fetch information from
+     * @param name
+     * The name of the language to search for
+     * @return
+     * An ArrayList of {@link CountryLanguages} from all countries which use the language, or null
+     */
+    public static ArrayList<CountryLanguages> getAllCountryLanguagesByName(DB db, String name) {
+        try {
+            Statement stmt = db.con.createStatement();
+            String query = "SELECT * FROM countrylanguage WHERE Language = '" + name + "'";
+            ResultSet rs = stmt.executeQuery(query);
+
+            HashMap<String, ArrayList<Language>> countryLanguagesHashMap = new HashMap<>();
+            while (rs.next()) {
+                String countryCode = rs.getString("CountryCode");
+                if (!countryLanguagesHashMap.containsKey(countryCode)) {
+                    countryLanguagesHashMap.put(countryCode, new ArrayList<>());
+                }
+
+                countryLanguagesHashMap.get(countryCode).add(
+                    new Language(
+                        rs.getString("CountryCode"),
+                        rs.getString("Language"),
+                        rs.getBoolean("IsOfficial"),
+                        rs.getFloat("Percentage")
+                    )
+                );
+            }
+            
+            ArrayList<CountryLanguages> countryLanguages = new ArrayList<>();
+            for (String languageCountryCode : countryLanguagesHashMap.keySet()) {
+                countryLanguages.add(new CountryLanguages(languageCountryCode, countryLanguagesHashMap.get(languageCountryCode)));
+            }
+            
+            return countryLanguages;
+
+        } catch (SQLException sqle) {
+            System.out.println("Failed to get country language with Language " + name);
+            System.out.println(sqle.getMessage());
+        }
+
+        return null;
+    }
 }
