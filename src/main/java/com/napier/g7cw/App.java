@@ -24,7 +24,7 @@ public class App {
 
 
         Report report = new Report(db);
-        report.getWorldLanguagesSortMostSpoken(true);
+        report.getWorldLanguagesSortMostSpoken(new ArrayList<>(List.of("Chinese", "English", "Hindi", "Spanish", "Arabic")), true);
         report.display();
 
         db.disconnect();

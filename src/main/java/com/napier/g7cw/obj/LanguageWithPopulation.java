@@ -11,10 +11,10 @@ import java.util.ArrayList;
  */
 public class LanguageWithPopulation implements Comparable<LanguageWithPopulation> {
     private String Name;
-    private int Population;
+    private long Population;
 
 
-    public LanguageWithPopulation(String Name, int Population) {
+    public LanguageWithPopulation(String Name, long Population) {
         this.Name = Name;
         this.Population = Population;
     }
@@ -23,7 +23,7 @@ public class LanguageWithPopulation implements Comparable<LanguageWithPopulation
     /**
      * LanguageWithPopulation constructor from a Language
      */
-    public LanguageWithPopulation(Language language, int Population) {
+    public LanguageWithPopulation(Language language, long Population) {
         this.Name = language.getName();
         this.Population = Population;
     }
@@ -35,17 +35,20 @@ public class LanguageWithPopulation implements Comparable<LanguageWithPopulation
         Name = name;
     }
 
-    public int getPopulation() {
+    public long getPopulation() {
         return Population;
     }
-    public void setPopulation(int Population) {
+    public void setPopulation(long Population) {
         this.Population = Population;
     }
 
 
     @Override
     public int compareTo(LanguageWithPopulation o) {
-        return Population - o.Population;
+        long diff = Population - o.Population;
+        if (diff > 0) { return 1; }
+        if (diff < 0) { return -1; }
+        return 0;
     }
 
 

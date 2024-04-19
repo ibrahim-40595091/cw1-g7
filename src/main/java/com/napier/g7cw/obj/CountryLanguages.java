@@ -23,7 +23,6 @@ public class CountryLanguages {
 
     public CountryLanguages(String countryCode, ArrayList<Language> allLanguages) {
         CountryCode = countryCode;
-        //Language foundOfficialLanguage = null;
         Official = new ArrayList<>();
         Other = new ArrayList<>();
 
@@ -37,8 +36,6 @@ public class CountryLanguages {
                 Other.add(language);
             }
         }
-
-
     }
 
     public ArrayList<Language> All() {

@@ -2,9 +2,6 @@ package com.napier.g7cw.obj;
 
 import com.napier.g7cw.db.*;
 
-import javax.print.DocFlavor;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -633,53 +630,57 @@ public class Report {
             allCountryLanguages.addAll(l.getOther());
 
             for (Language countryLanguage : allCountryLanguages) {
-                int population = (int)(
-                        // Get the country for this language
-                        CountryDBA.getCountry(db, countryLanguage.getCountryCode())
-                                // Get its full population
-                                .getPopulation()
-                                // Get the population that speaks this language
-                                * countryLanguage.getPercentage()
-                );
+                // Get the country this language is from
+                    // Get its full population
+                Country c = CountryDBA.getCountry(db, countryLanguage.getCountryCode());
+                long countryPopulation = c.getPopulation();
+
+                // Get the scaled population based on the language percentage
+                long languagePopulation = (long)(countryPopulation * (countryLanguage.getPercentage() / 100));
+
 
                 // Find the index of the language in the list of all languages
                 int worldLanguagesIndex = LanguageWithPopulation.indexOf(worldLanguages, countryLanguage.getName());
                 if (worldLanguagesIndex == -1) {
                     // Add a new entry if one doesn't exist for this language
-                    worldLanguages.add(new LanguageWithPopulation(countryLanguage.getName(), population));
+                    worldLanguages.add(new LanguageWithPopulation(countryLanguage.getName(), languagePopulation));
                     continue;
                 }
 
                 // Get the current LanguageWithPopulation object and update its population value
                 LanguageWithPopulation current = worldLanguages.get(worldLanguagesIndex);
-                current.setPopulation(current.getPopulation() + population);
+                current.setPopulation(current.getPopulation() + languagePopulation);
                 worldLanguages.set(worldLanguagesIndex, current); // Set new value
             }
         }
 
-
-        if (worldLanguages.isEmpty()) {
+        int worldLanguagesSize = worldLanguages.size();
+        if (worldLanguagesSize == 0) {
             lastGenerated = "No world languages fetched from database.";
             return lastGenerated;
         }
         // LanguageWithPopulation is comparable by population
+        // worldLanguages is now smallest->largest
         Collections.sort(worldLanguages);
 
 
         lastGenerated = "World Languages Report:\n";
         if (n == -1) {
-            n = worldLanguages.size();
+            n = worldLanguagesSize;
         }
-        n = Math.min(n, worldLanguages.size());
-        // Invert n if we're working backward in the sorted list (since we want smallest first)
-        if (!largestFirst) { n = worldLanguages.size() - n; }
+        n = Math.min(n, worldLanguagesSize);
 
         if (largestFirst) {
-            for (int i = 0; i < n; i++) {
-                lastGenerated += "\t" + (i + 1) + ".\t" + worldLanguages.get(i).getName() + " is spoken by " + worldLanguages.get(i).getPopulation() + " people\n";
+            // Invert n if we want largest first
+            n = (worldLanguagesSize) - n;
+
+            // Loop from end of list (largest) to n
+            for (int i = worldLanguagesSize-1; i >= n; i--) {
+                lastGenerated += "\t" + (worldLanguagesSize - i) + ".\t" + worldLanguages.get(i).getName() + " is spoken by " + worldLanguages.get(i).getPopulation() + " people\n";
             }
         } else {
-            for (int i = n - 1; i >= n; i--) {
+            // Loop from start of list (smallest) to n
+            for (int i = 0; i < n; i++) {
                 lastGenerated += "\t" + (i + 1) + ".\t" + worldLanguages.get(i).getName() + " is spoken by " + worldLanguages.get(i).getPopulation() + " people\n";
             }
         }
@@ -688,18 +689,83 @@ public class Report {
     }
 
 
+
     /**
-     * Report generator for N most spoken languages in the world
+     * Report generator for a sorted list of provided languages, sorted by most spoken
+     * @param languageNames
+     * The list of languages to generate a report for
      * @param largestFirst
      * Whether to sort languages by most-spoken first
-     * @param n
-     * The number of languages to display
      * @return
      * A string containing the report generated
      */
-//    public String getWorldLanguageSortMostSpoken(String language, boolean largestFirst, int n) {
-//
-//    }
+    public String getWorldLanguagesSortMostSpoken(ArrayList<String> languageNames, boolean largestFirst) {
+        ArrayList<CountryLanguages> countryLanguages = new ArrayList<>();
+        for (String name : languageNames) {
+            countryLanguages.addAll(CountryLanguagesDBA.getAllCountryLanguagesByName(db, name));
+        }
+
+        if (countryLanguages.isEmpty()) {
+            System.err.println("No languages fetched from database.");
+            lastGenerated = "";
+            return lastGenerated;
+        }
+
+        // For each country's list of languages, collect them into a single list and tally all populations
+        ArrayList<LanguageWithPopulation> collectedLanguages = new ArrayList<>();
+        for (CountryLanguages l : countryLanguages) {
+            ArrayList<Language> allCountryLanguages = l.getOfficial();
+            allCountryLanguages.addAll(l.getOther());
+
+            for (Language countryLanguage : allCountryLanguages) {
+                // Get the country this language is from
+                // Get its full population
+                Country c = CountryDBA.getCountry(db, countryLanguage.getCountryCode());
+                long countryPopulation = c.getPopulation();
+
+                // Get the scaled population based on the language percentage
+                long languagePopulation = (long) (countryPopulation * (countryLanguage.getPercentage() / 100));
+
+                // Find the index of the language in the list of all languages
+                int collectedLanguagesIndex = LanguageWithPopulation.indexOf(collectedLanguages, countryLanguage.getName());
+                if (collectedLanguagesIndex == -1) {
+                    // Add a new entry if one doesn't exist for this language
+                    collectedLanguages.add(new LanguageWithPopulation(countryLanguage.getName(), languagePopulation));
+                    continue;
+                }
+
+                // Get the current LanguageWithPopulation object and update its population value
+                LanguageWithPopulation current = collectedLanguages.get(collectedLanguagesIndex);
+                current.setPopulation(current.getPopulation() + languagePopulation);
+                collectedLanguages.set(collectedLanguagesIndex, current); // Set new value
+            }
+        }
+
+        int collectedLanguagesSize = collectedLanguages.size();
+        if (collectedLanguagesSize == 0) {
+            System.err.println("Could not collect languages from the database.");
+            lastGenerated = "";
+            return lastGenerated;
+        }
+        // LanguageWithPopulation is comparable by population
+        // collectedLanguages is now smallest->largest
+        Collections.sort(collectedLanguages);
+
+        lastGenerated = "World Languages Report:\n";
+        if (largestFirst) {
+            // Loop from end of list (largest) to n
+            for (int i = collectedLanguagesSize - 1; i >= 0; i--) {
+                lastGenerated += "\t" + (collectedLanguagesSize-i) + ".\t" + collectedLanguages.get(i).getName() + " is spoken by " + collectedLanguages.get(i).getPopulation() + " people\n";
+            }
+        } else {
+            // Loop from start of list (smallest) to n
+            for (int i = 0; i < collectedLanguagesSize; i++) {
+                lastGenerated += "\t" + (i + 1) + ".\t" + collectedLanguages.get(i).getName() + " is spoken by " + collectedLanguages.get(i).getPopulation() + " people\n";
+            }
+        }
+
+        return lastGenerated;
+    }
 
 
 
