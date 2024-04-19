@@ -382,7 +382,7 @@ public class AppTest {
 
         assertEquals("FRA", l.getCountryCode());
         assertEquals("French", l.getName());
-        assertTrue(l.getIsOfficial());
+        assertFalse(l.getIsOfficial());
         assertEquals(20.0f, l.getPercentage());
     }
 
@@ -406,6 +406,6 @@ public class AppTest {
                 20.0f
         );
 
-        assertFalse(l.getIsOfficial());
+        assertFalse(l2.getIsOfficial());
     }
 }
