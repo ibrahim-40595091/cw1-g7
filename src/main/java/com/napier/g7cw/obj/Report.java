@@ -664,6 +664,15 @@ public class Report {
         Collections.sort(worldLanguages);
 
 
+
+        // Get world population
+        ArrayList<Country> allCountries = CountryDBA.getAllCountries(db);
+        long worldPopulation = 0;
+        for (Country c : allCountries) {
+            worldPopulation += c.getPopulation();
+        }
+
+
         lastGenerated = "World Languages Report:\n";
         if (n == -1) {
             n = worldLanguagesSize;
@@ -676,12 +685,18 @@ public class Report {
 
             // Loop from end of list (largest) to n
             for (int i = worldLanguagesSize-1; i >= n; i--) {
-                lastGenerated += "\t" + (worldLanguagesSize - i) + ".\t" + worldLanguages.get(i).getName() + " is spoken by " + worldLanguages.get(i).getPopulation() + " people\n";
+                long languagePopulation = worldLanguages.get(i).getPopulation();
+                float percentage = (float)languagePopulation / worldPopulation * 100;
+                percentage = (float)Math.round(percentage * 100) /100; // 2 decimal places
+                lastGenerated += "\t" + (worldLanguagesSize - i) + ".\t" + worldLanguages.get(i).getName() + " is spoken by " + languagePopulation + " people (" + percentage + "% of world population)\n";
             }
         } else {
             // Loop from start of list (smallest) to n
             for (int i = 0; i < n; i++) {
-                lastGenerated += "\t" + (i + 1) + ".\t" + worldLanguages.get(i).getName() + " is spoken by " + worldLanguages.get(i).getPopulation() + " people\n";
+                long languagePopulation = worldLanguages.get(i).getPopulation();
+                float percentage = (float)languagePopulation / worldPopulation * 100;
+                percentage = (float)Math.round(percentage * 100) /100; // 2 decimal places
+                lastGenerated += "\t" + (i + 1) + ".\t" + worldLanguages.get(i).getName() + " is spoken by " + languagePopulation + " people (" + percentage + "% of world population)\n";
             }
         }
 
@@ -751,16 +766,33 @@ public class Report {
         // collectedLanguages is now smallest->largest
         Collections.sort(collectedLanguages);
 
+
+
+        // Get world population
+        ArrayList<Country> allCountries = CountryDBA.getAllCountries(db);
+        long worldPopulation = 0;
+        for (Country c : allCountries) {
+            worldPopulation += c.getPopulation();
+        }
+
+
+
         lastGenerated = "World Languages Report:\n";
         if (largestFirst) {
             // Loop from end of list (largest) to n
             for (int i = collectedLanguagesSize - 1; i >= 0; i--) {
-                lastGenerated += "\t" + (collectedLanguagesSize-i) + ".\t" + collectedLanguages.get(i).getName() + " is spoken by " + collectedLanguages.get(i).getPopulation() + " people\n";
+                long languagePopulation = collectedLanguages.get(i).getPopulation();
+                float percentage = (float)languagePopulation / worldPopulation * 100;
+                percentage = (float)Math.round(percentage * 100) /100; // 2 decimal places
+                lastGenerated += "\t" + (collectedLanguagesSize-i) + ".\t" + collectedLanguages.get(i).getName() + " is spoken by " + languagePopulation + " people (" + percentage + "% of world population)\n";
             }
         } else {
             // Loop from start of list (smallest) to n
             for (int i = 0; i < collectedLanguagesSize; i++) {
-                lastGenerated += "\t" + (i + 1) + ".\t" + collectedLanguages.get(i).getName() + " is spoken by " + collectedLanguages.get(i).getPopulation() + " people\n";
+                long languagePopulation = collectedLanguages.get(i).getPopulation();
+                float percentage = (float)languagePopulation / worldPopulation * 100;
+                percentage = (float)Math.round(percentage*100)/100; // 2 decimal places
+                lastGenerated += "\t" + (i + 1) + ".\t" + collectedLanguages.get(i).getName() + " is spoken by " + languagePopulation + " people (" + percentage + "% of world population)\n";
             }
         }
 
