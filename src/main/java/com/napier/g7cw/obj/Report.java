@@ -38,10 +38,10 @@ public class Report {
      */
     public String generate(City c) {
         lastGenerated = "City Report:\n" +
-                "\tName: " + c.Name + "\n" +
+                "\tName: " + c.getName() + "\n" +
                 // Use countryCode to get country from database
-                "\tCountry: " + CountryDBA.getCountry(db, c.CountryCode).LocalName + "\n" +
-                "\tPopulation: " + c.Population + "\n";
+                "\tCountry: " + CountryDBA.getCountry(db, c.getCountryCode()).getLocalName() + "\n" +
+                "\tPopulation: " + c.getPopulation() + "\n";
         return lastGenerated;
     }
 
@@ -54,7 +54,7 @@ public class Report {
      * A string containing the report generated
      */
     public String generate(Continent c) {
-        lastGenerated = "Continent: " + c.Name;
+        lastGenerated = "Continent: " + c.getName();
         return lastGenerated;
     }
 
@@ -69,13 +69,13 @@ public class Report {
     public String generate(Country c) {
         Report capitalReport = new Report(db);
         Report countryLanguagesReport = new Report(db);
-        capitalReport.generate(c.Capital);
+        capitalReport.generate(c.getCapital());
         lastGenerated = "Country Report:\n" +
-                "\tCode: " + c.Code + "\n" +
-                "\tName: " + c.Name + "\n" +
-                "\tContinent: " + c.Continent + "\n" +
-                "\tRegion: " + c.Region + "\n" +
-                "\tCapital: " + capitalReport.generate(c.Capital) + "\n";
+                "\tCode: " + c.getCode() + "\n" +
+                "\tName: " + c.getName() + "\n" +
+                "\tContinent: " + c.getContinent() + "\n" +
+                "\tRegion: " + c.getRegion() + "\n" +
+                "\tCapital: " + capitalReport.generate(c.getCapital()) + "\n";
         return lastGenerated;
     }
 
@@ -89,21 +89,21 @@ public class Report {
      */
     public String generate(CountryLanguages cl) {
         // Catch empty languages
-        if (cl.Official.isEmpty() && cl.Other.isEmpty()) {
+        if (cl.getOfficial().isEmpty() && cl.getOther().isEmpty()) {
             lastGenerated = "Country Languages Report:\n" +
-                    "\tNo languages found for " + CountryDBA.getCountry(db, cl.CountryCode);
+                    "\tNo languages found for " + CountryDBA.getCountry(db, cl.getCountryCode());
             return lastGenerated;
         }
 
         lastGenerated = "Country Languages Report:\n" +
-                "\tCountry Code: " + cl.CountryCode + "\n" +
+                "\tCountry Code: " + cl.getCountryCode() + "\n" +
                 "\tOfficial Languages:\n";
-        for (Language l : cl.Official) {
-            lastGenerated += "\t\t" + l.Name + " (" + l.Percentage + "%)\n";
+        for (Language l : cl.getOfficial()) {
+            lastGenerated += "\t\t" + l.getName() + " (" + l.getPercentage() + "%)\n";
         }
         lastGenerated += "\tOther Languages:\n";
-        for (Language l : cl.Other) {
-            lastGenerated += "\t\t" + l.Name + " (" + l.Percentage + "%)\n";
+        for (Language l : cl.getOther()) {
+            lastGenerated += "\t\t" + l.getName() + " (" + l.getPercentage() + "%)\n";
         }
 
         return lastGenerated;
@@ -119,10 +119,10 @@ public class Report {
      */
     public String generate(Language l) {
         lastGenerated = "Language Report:\n" +
-                "\tName: " + l.Name + "\n" +
-                "\tCountry Code: " + l.CountryCode + "\n" +
-                "\tIs Official: " + l.IsOfficial + "\n" +
-                "\tPercentage: " + l.Percentage + "\n";
+                "\tName: " + l.getName() + "\n" +
+                "\tCountry Code: " + l.getCountryCode() + "\n" +
+                "\tIs Official: " + l.getIsOfficial() + "\n" +
+                "\tPercentage: " + l.getPercentage() + "\n";
         return lastGenerated;
     }
 
@@ -152,7 +152,7 @@ public class Report {
         if (n == -1) { n = countries.size(); }
         for (int i=0; i<n; i++) {
             Country c = countries.get(i);
-            lastGenerated += "\t" + (i+1) + ".\t" + c.Name + " (" + c.Population + ")\n";
+            lastGenerated += "\t" + (i+1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
         }
 
         return lastGenerated;
@@ -193,7 +193,7 @@ public class Report {
         if (n == -1) { n = countries.size(); }
         for (int i=0; i<n; i++) {
             Country c = countries.get(i);
-            lastGenerated += "\t" + (i+1) + ".\t" + c.Name + " (" + c.Population + ")\n";
+            lastGenerated += "\t" + (i+1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
         }
 
         return lastGenerated;
@@ -235,7 +235,7 @@ public class Report {
         if (n == -1) { n = countries.size(); }
         for (int i=0; i<n; i++) {
             Country c = countries.get(i);
-            lastGenerated += "\t" + (i+1) + ".\t" + c.Name + " (" + c.Population + ")\n";
+            lastGenerated += "\t" + (i+1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
         }
 
         return lastGenerated;
@@ -276,7 +276,7 @@ public class Report {
         n = Math.min(n, cities.size());
         for (int i = 0; i < n; i++) {
             City c = cities.get(i);
-            lastGenerated += "\t" + (i + 1) + ".\t" + c.Name + " (" + c.Population + ")\n";
+            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
         }
 
         return lastGenerated;
@@ -321,7 +321,7 @@ public class Report {
         n = Math.min(n, cities.size());
         for (int i = 0; i < n; i++) {
             City c = cities.get(i);
-            lastGenerated += "\t" + (i + 1) + ".\t" + c.Name + " (" + c.Population + ")\n";
+            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
         }
 
         return lastGenerated;
@@ -366,7 +366,7 @@ public class Report {
         n = Math.min(n, cities.size());
         for (int i = 0; i < n; i++) {
             City c = cities.get(i);
-            lastGenerated += "\t" + (i + 1) + ".\t" + c.Name + " (" + c.Population + ")\n";
+            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
         }
 
         return lastGenerated;
@@ -411,7 +411,7 @@ public class Report {
         n = Math.min(n, cities.size());
         for (int i = 0; i < n; i++) {
             City c = cities.get(i);
-            lastGenerated += "\t" + (i + 1) + ".\t" + c.Name + " (" + c.Population + ")\n";
+            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
         }
 
         return lastGenerated;
@@ -456,7 +456,7 @@ public class Report {
         n = Math.min(n, cities.size());
         for (int i = 0; i < n; i++) {
             City c = cities.get(i);
-            lastGenerated += "\t" + (i + 1) + ".\t" + c.Name + " (" + c.Population + ")\n";
+            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
         }
 
         return lastGenerated;
@@ -497,7 +497,7 @@ public class Report {
         n = Math.min(n, cities.size());
         for (int i = 0; i < n; i++) {
             City c = cities.get(i);
-            lastGenerated += "\t" + (i + 1) + ".\t" + c.Name + " (" + c.Population + ")\n";
+            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
         }
 
         return lastGenerated;
@@ -542,7 +542,7 @@ public class Report {
         n = Math.min(n, cities.size());
         for (int i = 0; i < n; i++) {
             City c = cities.get(i);
-            lastGenerated += "\t" + (i + 1) + ".\t" + c.Name + " (" + c.Population + ")\n";
+            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
         }
 
         return lastGenerated;
@@ -588,7 +588,7 @@ public class Report {
         n = Math.min(n, cities.size());
         for (int i = 0; i < n; i++) {
             City c = cities.get(i);
-            lastGenerated += "\t" + (i + 1) + ".\t" + c.Name + " (" + c.Population + ")\n";
+            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
         }
 
         return lastGenerated;

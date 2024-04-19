@@ -214,11 +214,11 @@ public class CountryDBA {
     private static Country getCountryByCapital(DB db, City capital) {
         try {
             Statement stmt = db.con.createStatement();
-            String query = "SELECT * FROM country WHERE capital = " + capital.ID + " LIMIT 1";
+            String query = "SELECT * FROM country WHERE capital = " + capital.getID() + " LIMIT 1";
             ResultSet rs = stmt.executeQuery(query);
 
             if (!rs.next()) {
-                System.out.println("Country with capital '" + capital.Name + "' not found");
+                System.out.println("Country with capital '" + capital.getName() + "' not found");
                 return null;
             }
 
