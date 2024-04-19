@@ -39,9 +39,31 @@ public class CountryDBA {
 
 
     /**
+     * Fetches all countries from the database
+     */
+    public static ArrayList<Country> getAllCountries(DB db) {
+        try {
+            Statement stmt = db.con.createStatement();
+            String query = "SELECT * FROM country;";
+            ResultSet rs = stmt.executeQuery(query);
+
+            ArrayList<Country> countries = new ArrayList<>();
+            while (rs.next()) {
+                countries.add(countryFromResultSet(db, rs));
+            }
+
+            return countries;
+        } catch (SQLException sqle) {
+            System.out.println("SQL Error.");
+            System.out.println(sqle.getMessage());
+        }
+        return null;
+    }
+
+    /**
      * Fetches all countries from the database, and sorts them by population
      */
-    public static ArrayList<Country> getAllCountries(DB db, boolean largestFirst) {
+    public static ArrayList<Country> getAllCountriesSortPopulation(DB db, boolean largestFirst) {
         try {
             Statement stmt = db.con.createStatement();
             String query = "SELECT * FROM country ORDER BY Population " + (largestFirst ? "DESC" : "ASC") + ";";
@@ -140,7 +162,7 @@ public class CountryDBA {
                     rs.getString("HeadOfState"),
                     capital,
                     rs.getString("Code2"),
-                    CountryLanguagesDBA.getCountryLanguage(db, rs.getString("Code"))
+                    CountryLanguagesDBA.getCountryLanguages(db, rs.getString("Code"))
             );
 
             return c;

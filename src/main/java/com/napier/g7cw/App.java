@@ -24,7 +24,7 @@ public class App {
 
 
         Report report = new Report(db);
-        report.getContinentCapitalCitiesSortPopulation("Europe", true, 10);
+        report.getWorldLanguagesSortMostSpoken(true);
         report.display();
 
         db.disconnect();

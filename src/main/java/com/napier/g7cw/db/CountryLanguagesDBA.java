@@ -1,10 +1,12 @@
 package com.napier.g7cw.db;
 
+import com.napier.g7cw.obj.Country;
 import com.napier.g7cw.obj.CountryLanguages;
 import com.napier.g7cw.obj.Language;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 /**
@@ -17,8 +19,9 @@ public class CountryLanguagesDBA {
      * The database to fetch from
      * @param countryCode
      * @return
+     * {@link CountryLanguages}
      */
-    public static CountryLanguages getCountryLanguage(DB db, String countryCode) {
+    public static CountryLanguages getCountryLanguages(DB db, String countryCode) {
         try {
             Statement stmt = db.con.createStatement();
             String query = "SELECT * FROM countrylanguage WHERE CountryCode = '" + countryCode + "'";
@@ -54,5 +57,24 @@ public class CountryLanguagesDBA {
         }
 
         return null;
+    }
+
+
+    /**
+     * Fetches all languages from all countries
+     * @param db
+     * The database to fetch information from
+     * @returns
+     * A HashMap of country codes mapped to {@link CountryLanguages}
+     */
+    public static HashMap<String, CountryLanguages> getAllCountryLanguages(DB db) {
+        ArrayList<Country> allCountries = CountryDBA.getAllCountries(db);
+
+        HashMap<String, CountryLanguages> allCountryLanguages = new HashMap<>();
+        for (Country country : allCountries) {
+            allCountryLanguages.put(country.getCode(), getCountryLanguages(db, country.getCode()));
+        }
+
+        return allCountryLanguages;
     }
 }
