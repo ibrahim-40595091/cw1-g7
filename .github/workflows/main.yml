@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - master
-      - Develop
 
 jobs:
   UnitTests:
@@ -21,6 +20,13 @@ jobs:
           distribution: 'adopt'
       - name: Unit Tests
         run: mvn -Dtest=com.napier.g7cw.AppTest test
+      - name: CodeCov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./target/site/jacoco
+          flags: Unit Tests
+          verbose: true
 
   IntegrationTests:
     name: Integration Tests
@@ -49,8 +55,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }} # now required for public repos
           directory: ./target/site/jacoco
           flags: Integration Tests # optional
-          verbose: true # optional (default = false)
-          slug: ibrahim-40595091/cw1-g7
+          verbose: true
 
   build:
     name: Build and Start Using docker-compose
@@ -69,7 +74,6 @@ jobs:
         run: |
           mvn package -DskipTests
           docker-compose up --abort-on-container-exit
-          
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
