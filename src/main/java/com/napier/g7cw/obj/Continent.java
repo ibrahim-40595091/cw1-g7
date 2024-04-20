@@ -1,5 +1,10 @@
 package com.napier.g7cw.obj;
 
+/**
+ * Represents a continent as fetched from the MySQL database<br>
+ *      Enumerable field - cannot create "custom" continents<br>
+ *      They must be selected from the set static fields within the class<br>
+ */
 public class Continent {
     public static Continent Asia = new Continent("Asia");
     public static Continent Europe = new Continent("Europe");
@@ -10,10 +15,12 @@ public class Continent {
     public static Continent SouthAmerica = new Continent("South America");
 
 
-    public final String Name;
+    private String Name;
     private Continent(String name) {
         Name = name;
     }
+
+    public String getName() { return Name; }
 
     /**
      * Returns the Continent object that corresponds to the given name

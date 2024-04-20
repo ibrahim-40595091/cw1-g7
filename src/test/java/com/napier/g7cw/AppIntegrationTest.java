@@ -22,11 +22,11 @@ public class AppIntegrationTest {
     void testGetCity() {
          City city = CityDBA.getCityByID(db, 1);
          assertNotNull(city);
-         assertEquals(city.ID, 1);
-         assertEquals(city.Name, "Kabul");
-         assertEquals(city.CountryCode, "AFG");
-         assertEquals(city.District, "Kabol");
-         assertEquals(city.Population, 1780000);
+         assertEquals(city.getID(), 1);
+         assertEquals(city.getName(), "Kabul");
+         assertEquals(city.getCountryCode(), "AFG");
+         assertEquals(city.getDistrict(), "Kabol");
+         assertEquals(city.getPopulation(), 1780000);
     }
 
     @AfterAll
