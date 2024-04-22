@@ -45,13 +45,3 @@ Markdown
 | 30   | The population of a district | Yes | ![image](https://github.com/ibrahim-40595091/cw1-g7/assets/157694800/cffd8743-4aa4-43d7-9788-0fc7e3688f85)|
 | 31   | The population of a city | Yes |![image](https://github.com/ibrahim-40595091/cw1-g7/assets/157694800/8582d384-cfcb-42c7-b96d-4e9e74eb6a4f)|
 | 32   | The number of people who speak Chinese, English, Hindi, Spanish and Arabic, most-to-least spoken, including % of the world | Yes  |![image](https://github.com/ibrahim-40595091/cw1-g7/assets/157694800/a8d5549b-ec35-4e42-9724-03f70da6b3d2)|
-
-
-
-
-
-
-
-
-
-

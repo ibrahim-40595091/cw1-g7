@@ -2,6 +2,7 @@ package com.napier.g7cw.obj;
 
 import com.napier.g7cw.db.*;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,25 +37,36 @@ public class Report {
      * A string containing the report generated
      */
     public String generate(City c) {
-        lastGenerated = "City Report:\n" +
-                "\tName: " + c.getName() + "\n" +
-                // Use countryCode to get country from database
-                "\tCountry: " + CountryDBA.getCountry(db, c.getCountryCode()).getLocalName() + "\n" +
-                "\tPopulation: " + c.getPopulation() + "\n";
-        return lastGenerated;
+        return String.format(
+                "%-20.20s %-25.25s %-20.20s %-8.8s\n",
+                c.getName(),
+                CountryDBA.getCountry(db, c.getCountryCode()).getName(),
+                c.getDistrict(),
+                c.getPopulation()
+        );
     }
 
 
     /**
-     * Report generator for continents
+     * Report generator for capital cities
      * @param c
-     * The provided continent to generate a report for
+     * The provided city to generate a report for
+     * @param capital
+     * Boolean to indicate city is a capital
      * @return
      * A string containing the report generated
      */
-    public String generate(Continent c) {
-        lastGenerated = "Continent: " + c.getName();
-        return lastGenerated;
+    public String generate(City c, boolean capital) {
+        if (!capital) {
+            return generate(c);
+        }
+
+        return String.format(
+                "%-20.20s %-25.25s %-8.8s\n",
+                c.getName(),
+                CountryDBA.getCountry(db, c.getCountryCode()).getName(),
+                c.getPopulation()
+        );
     }
 
 
@@ -66,63 +78,15 @@ public class Report {
      * A string containing the report generated
      */
     public String generate(Country c) {
-        Report capitalReport = new Report(db);
-        Report countryLanguagesReport = new Report(db);
-        capitalReport.generate(c.getCapital());
-        lastGenerated = "Country Report:\n" +
-                "\tCode: " + c.getCode() + "\n" +
-                "\tName: " + c.getName() + "\n" +
-                "\tContinent: " + c.getContinent() + "\n" +
-                "\tRegion: " + c.getRegion() + "\n" +
-                "\tCapital: " + capitalReport.generate(c.getCapital()) + "\n";
-        return lastGenerated;
-    }
-
-
-    /**
-     * Report generator for country languages
-     * @param cl
-     * The provided languages to generate a report for
-     * @return
-     * A string containing the report generated
-     */
-    public String generate(CountryLanguages cl) {
-        // Catch empty languages
-        if (cl.getOfficial().isEmpty() && cl.getOther().isEmpty()) {
-            lastGenerated = "Country Languages Report:\n" +
-                    "\tNo languages found for " + CountryDBA.getCountry(db, cl.getCountryCode());
-            return lastGenerated;
-        }
-
-        lastGenerated = "Country Languages Report:\n" +
-                "\tCountry Code: " + cl.getCountryCode() + "\n" +
-                "\tOfficial Languages:\n";
-        for (Language l : cl.getOfficial()) {
-            lastGenerated += "\t\t" + l.getName() + " (" + l.getPercentage() + "%)\n";
-        }
-        lastGenerated += "\tOther Languages:\n";
-        for (Language l : cl.getOther()) {
-            lastGenerated += "\t\t" + l.getName() + " (" + l.getPercentage() + "%)\n";
-        }
-
-        return lastGenerated;
-    }
-
-
-    /**
-     * Report generator for a single language
-     * @param l
-     * The provided languages to generate a report for
-     * @return
-     * A string containing the report generated
-     */
-    public String generate(Language l) {
-        lastGenerated = "Language Report:\n" +
-                "\tName: " + l.getName() + "\n" +
-                "\tCountry Code: " + l.getCountryCode() + "\n" +
-                "\tIs Official: " + l.getIsOfficial() + "\n" +
-                "\tPercentage: " + l.getPercentage() + "\n";
-        return lastGenerated;
+        return String.format(
+                "%-4.4s %-25.25s %-15.15s %-20.20s %-12.12s %-20.20s\n",
+                c.getCode(),
+                c.getName(),
+                c.getContinent().getName(),
+                c.getRegion(),
+                c.getPopulation(),
+                c.getCapital().getName()
+        );
     }
 
 
@@ -147,11 +111,23 @@ public class Report {
             return lastGenerated;
         }
 
-        lastGenerated = "World Countries Report:\n";
+        lastGenerated = "World Countries Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " populated first:\n";
+        lastGenerated += String.format(
+                "%-4.4s %-4.4s %-25.25s %-15.15s %-20.20s %-12.12s %-20.20s\n",
+                "Rank",
+                "Code",
+                "Name",
+                "Continent",
+                "Region",
+                "Population",
+                "Capital"
+        );
+
         if (n == -1) { n = countries.size(); }
         for (int i=0; i<n; i++) {
             Country c = countries.get(i);
-            lastGenerated += "\t" + (i+1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
+            lastGenerated += String.format("%-4.4s ", (i+1)) + generate(c);
+//            lastGenerated += "\t" + (i+1) + ".\t" + c.getName() + "\n";
         }
 
         return lastGenerated;
@@ -188,11 +164,23 @@ public class Report {
             return lastGenerated;
         }
 
-        lastGenerated = continent + " Countries Report:\n";
+        lastGenerated = continent + " Countries Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " populated first:\n";
+        lastGenerated += String.format(
+                "%-4.4s %-4.4s %-25.25s %-15.15s %-20.20s %-12.12s %-20.20s\n",
+                "Rank",
+                "Code",
+                "Name",
+                "Continent",
+                "Region",
+                "Population",
+                "Capital"
+        );
+
         if (n == -1) { n = countries.size(); }
         for (int i=0; i<n; i++) {
             Country c = countries.get(i);
-            lastGenerated += "\t" + (i+1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
+            lastGenerated += String.format("%-4.4s ", (i+1)) + generate(c);
+//            lastGenerated += "\t" + (i+1) + ".\t" + c.getName() + "\n";
         }
 
         return lastGenerated;
@@ -230,11 +218,23 @@ public class Report {
             return lastGenerated;
         }
 
-        lastGenerated = region + " Countries Report:\n";
+        lastGenerated = region + " Countries Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " populated first:\n";
+        lastGenerated += String.format(
+                "%-4.4s %-4.4s %-25.25s %-15.15s %-20.20s %-12.12s %-20.20s\n",
+                "Rank",
+                "Code",
+                "Name",
+                "Continent",
+                "Region",
+                "Population",
+                "Capital"
+        );
+
         if (n == -1) { n = countries.size(); }
         for (int i=0; i<n; i++) {
             Country c = countries.get(i);
-            lastGenerated += "\t" + (i+1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
+            lastGenerated += String.format("%-4.4s ", (i+1)) + generate(c);
+//            lastGenerated += "\t" + (i+1) + ".\t" + c.getName() + "\n";
         }
 
         return lastGenerated;
@@ -268,14 +268,24 @@ public class Report {
             return lastGenerated;
         }
 
-        lastGenerated = "World Cities Report:\n";
+        lastGenerated = "World Cities Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " populated first:\n";
+        lastGenerated += String.format(
+                "%-8s %-20.20s %-25.25s %-20.20s %-10.10s\n",
+                "Rank",
+                "Name",
+                "Country",
+                "District",
+                "Population"
+        );
+
         if (n == -1) {
             n = cities.size();
         }
         n = Math.min(n, cities.size());
         for (int i = 0; i < n; i++) {
             City c = cities.get(i);
-            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
+            lastGenerated += String.format("%-8.8s ", (i+1)) + generate(c);
+//            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
         }
 
         return lastGenerated;
@@ -313,14 +323,24 @@ public class Report {
             return lastGenerated;
         }
 
-        lastGenerated = continent + " Cities Report:\n";
+        lastGenerated = continent + " Cities Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " populated first:\n";
+        lastGenerated += String.format(
+                "%-8s %-20.20s %-25.25s %-20.20s %-10.10s\n",
+                "Rank",
+                "Name",
+                "Country",
+                "District",
+                "Population"
+        );
+
         if (n == -1) {
             n = cities.size();
         }
         n = Math.min(n, cities.size());
         for (int i = 0; i < n; i++) {
             City c = cities.get(i);
-            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
+            lastGenerated += String.format("%-8.8s ", (i+1)) + generate(c);
+//            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
         }
 
         return lastGenerated;
@@ -358,14 +378,23 @@ public class Report {
             return lastGenerated;
         }
 
-        lastGenerated = region + " Cities Report:\n";
+        lastGenerated = region + " Cities Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " populated first:\n";
+        lastGenerated += String.format(
+                "%-8s %-20.20s %-25.25s %-20.20s %-10.10s\n",
+                "Rank",
+                "Name",
+                "Country",
+                "District",
+                "Population"
+        );
+
         if (n == -1) {
             n = cities.size();
         }
         n = Math.min(n, cities.size());
         for (int i = 0; i < n; i++) {
             City c = cities.get(i);
-            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
+            lastGenerated += String.format("%-8.8s ", (i+1)) + generate(c);
         }
 
         return lastGenerated;
@@ -374,15 +403,15 @@ public class Report {
 
     /**
      * Report generator for all cities in a specific country, sorted by population
-     * @param country
+     * @param countryCode
      * The country to get cities from
      * @param largestFirst
      * Whether to sort the cities by largest population first
      * @return
      * A string containing the report generated
      */
-    public String getCountryCitiesSortPopulation(String country, boolean largestFirst) {
-        return getCountryCitiesSortPopulation(country, largestFirst, -1);
+    public String getCountryCitiesSortPopulation(String countryCode, boolean largestFirst) {
+        return getCountryCitiesSortPopulation(countryCode, largestFirst, -1);
     }
     /**
      * Report generator for N cities in a specific country, sorted by population
@@ -403,14 +432,24 @@ public class Report {
             return lastGenerated;
         }
 
-        lastGenerated = country + " Cities Report:\n";
+        lastGenerated = country + " Cities Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " populated first:\n";
+        lastGenerated += String.format(
+                "%-8s %-20.20s %-25.25s %-20.20s %-10.10s\n",
+                "Rank",
+                "Name",
+                "Country",
+                "District",
+                "Population"
+        );
+
         if (n == -1) {
             n = cities.size();
         }
         n = Math.min(n, cities.size());
         for (int i = 0; i < n; i++) {
             City c = cities.get(i);
-            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
+            lastGenerated += String.format("%-8.8s ", (i+1)) + generate(c);
+//            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
         }
 
         return lastGenerated;
@@ -448,14 +487,24 @@ public class Report {
             return lastGenerated;
         }
 
-        lastGenerated = district + " Cities Report:\n";
+        lastGenerated = district + " Cities Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " populated first:\n";
+        lastGenerated += String.format(
+                "%-8s %-20.20s %-25.25s %-20.20s %-10.10s\n",
+                "Rank",
+                "Name",
+                "Country",
+                "District",
+                "Population"
+        );
+
         if (n == -1) {
             n = cities.size();
         }
         n = Math.min(n, cities.size());
         for (int i = 0; i < n; i++) {
             City c = cities.get(i);
-            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
+            lastGenerated += String.format("%-8.8s ", (i+1)) + generate(c);
+//            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
         }
 
         return lastGenerated;
@@ -489,14 +538,23 @@ public class Report {
             return lastGenerated;
         }
 
-        lastGenerated = "World Capital Cities Report:\n";
+        lastGenerated = "World Capital Cities Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " populated first:\n";
+        lastGenerated += String.format(
+                "%-8s %-20.20s %-25.25s %-10.10s\n",
+                "Rank",
+                "Name",
+                "Country",
+                "Population"
+        );
+
         if (n == -1) {
             n = cities.size();
         }
         n = Math.min(n, cities.size());
         for (int i = 0; i < n; i++) {
             City c = cities.get(i);
-            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
+            lastGenerated += String.format("%-8.8s ", (i+1)) + generate(c, true);
+//            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
         }
 
         return lastGenerated;
@@ -534,14 +592,23 @@ public class Report {
             return lastGenerated;
         }
 
-        lastGenerated = continent + " Capital Cities Report:\n";
+        lastGenerated = continent + " Capital Cities Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " populated first:\n";
+        lastGenerated += String.format(
+                "%-8s %-20.20s %-25.25s %-10.10s\n",
+                "Rank",
+                "Name",
+                "Country",
+                "Population"
+        );
+
         if (n == -1) {
             n = cities.size();
         }
         n = Math.min(n, cities.size());
         for (int i = 0; i < n; i++) {
             City c = cities.get(i);
-            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
+            lastGenerated += String.format("%-8.8s ", (i+1)) + generate(c, true);
+//            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
         }
 
         return lastGenerated;
@@ -580,17 +647,149 @@ public class Report {
             return lastGenerated;
         }
 
-        lastGenerated = region + " Capital Cities Report:\n";
+        lastGenerated = region + " Capital Cities Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " populated first:\n";
+        lastGenerated += String.format(
+                "%-8s %-20.20s %-25.25s %-10.10s\n",
+                "Rank",
+                "Name",
+                "Country",
+                "Population"
+        );
+
         if (n == -1) {
             n = cities.size();
         }
         n = Math.min(n, cities.size());
         for (int i = 0; i < n; i++) {
             City c = cities.get(i);
-            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
+            lastGenerated += String.format("%-8.8s ", (i+1)) + generate(c, true);
+//            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
         }
 
         return lastGenerated;
+    }
+
+
+    /**
+     * Report generator for the population of the world
+     * @return
+     * A string containing the report generated
+     */
+    public String getWorldPopulation() {
+        try {
+            ResultSet rs = db.customQuery("SELECT SUM(population) FROM country");
+            if (rs != null && rs.next()) {
+                lastGenerated = "World Population Report:\n" +
+                        "\tThe world population is " + rs.getLong(1);
+                return lastGenerated;
+            }
+        } catch (Exception ignored) {}
+        return "Error fetching world population";
+    }
+
+
+    /**
+     * Report generator for the population of a continent
+     * @param continent
+     * The continent to get the population of
+     * @return
+     * A string containing the report generated
+     */
+    public String getContinentPopulation(String continent) {
+        try {
+            ResultSet rs = db.customQuery("SELECT SUM(population) FROM country WHERE continent = '" + continent + "'");
+            if (rs != null && rs.next()) {
+                lastGenerated = "Continent " + continent + " Population Report:\n" +
+                        "\tThe population of " + continent + " is " + rs.getLong(1);
+                return lastGenerated;
+            }
+        } catch (Exception ignored) {
+        }
+        return "Error fetching continent population";
+    }
+
+
+    /**
+     * Report generator for the population of a region
+     * @param region
+     * The region to get the population of
+     * @return
+     * A string containing the report generated
+     */
+    public String getRegionPopulation(String region) {
+        try {
+            ResultSet rs = db.customQuery("SELECT SUM(population) FROM country WHERE region = '" + region + "'");
+            if (rs != null && rs.next()) {
+                lastGenerated = "Region " + region + " Population Report:\n" +
+                        "\tThe population of " + region + " is " + rs.getLong(1);
+                return lastGenerated;
+            }
+        } catch (Exception ignored) {
+        }
+        return "Error fetching region population";
+    }
+
+
+    /**
+     * Report generator for the population of a country
+     * @param countryCode
+     * The country to get the population of
+     * @return
+     * A string containing the report generated
+     */
+    public String getCountryPopulation(String countryCode) {
+        try {
+            ResultSet rs = db.customQuery("SELECT population FROM country WHERE code = '" + countryCode + "'");
+            if (rs != null && rs.next()) {
+                lastGenerated = "Country " + countryCode + " Population Report:\n" +
+                        "\tThe population of " + countryCode + " is " + rs.getLong(1);
+                return lastGenerated;
+            }
+        } catch (Exception ignored) {
+        }
+        return "Error fetching country population";
+    }
+
+
+    /**
+     * Report generator for the population of a district
+     * @param district
+     * The district to get the population of
+     * @return
+     * A string containing the report generated
+     */
+    public String getDistrictPopulation(String district) {
+        try {
+            ResultSet rs = db.customQuery("SELECT SUM(population) FROM city WHERE district = '" + district + "'");
+            if (rs != null && rs.next()) {
+                lastGenerated = "District " + district + " Population Report:\n" +
+                        "\tThe population of " + district + " is " + rs.getLong(1);
+                return lastGenerated;
+            }
+        } catch (Exception ignored) {
+        }
+        return "Error fetching district population";
+    }
+
+
+    /**
+     * Report generator for the population of a city
+     * @param cityName
+     * The city to get the population of
+     * @return
+     * A string containing the report generated
+     */
+    public String getCityPopulation(String cityName) {
+        try {
+            ResultSet rs = db.customQuery("SELECT population FROM city WHERE name = '" + cityName + "'");
+            if (rs != null && rs.next()) {
+                lastGenerated = "City " + cityName + " Population Report:\n" +
+                        "\tThe population of " + cityName + " is " + rs.getLong(1);
+                return lastGenerated;
+            }
+        } catch (Exception ignored) {
+        }
+        return "Error fetching city population";
     }
 
 
@@ -673,7 +872,7 @@ public class Report {
         }
 
 
-        lastGenerated = "World Languages Report:\n";
+        lastGenerated = "World Languages Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " spoken first:\n";
         if (n == -1) {
             n = worldLanguagesSize;
         }
@@ -767,7 +966,6 @@ public class Report {
         Collections.sort(collectedLanguages);
 
 
-
         // Get world population
         ArrayList<Country> allCountries = CountryDBA.getAllCountries(db);
         long worldPopulation = 0;
@@ -776,15 +974,30 @@ public class Report {
         }
 
 
+        lastGenerated = "World Languages Report with " + (largestFirst ? "most" : "least") + " spoken first:\n";
+        lastGenerated += String.format(
+                "%-8s %-15.15s %10.10s %8.8s\n",
+                "Rank",
+                "Name",
+                "Spoken by",
+                "% world"
+        );
 
-        lastGenerated = "World Languages Report:\n";
         if (largestFirst) {
             // Loop from end of list (largest) to n
             for (int i = collectedLanguagesSize - 1; i >= 0; i--) {
                 long languagePopulation = collectedLanguages.get(i).getPopulation();
                 float percentage = (float)languagePopulation / worldPopulation * 100;
                 percentage = (float)Math.round(percentage * 100) /100; // 2 decimal places
-                lastGenerated += "\t" + (collectedLanguagesSize-i) + ".\t" + collectedLanguages.get(i).getName() + " is spoken by " + languagePopulation + " people (" + percentage + "% of world population)\n";
+
+                lastGenerated += String.format(
+                        "%-8s %-15.15s %10.10s %8.8s\n",
+                        (collectedLanguagesSize-i),
+                        collectedLanguages.get(i).getName(),
+                        languagePopulation,
+                        percentage
+                );
+//                lastGenerated += "\t" + (collectedLanguagesSize-i) + ".\t" + collectedLanguages.get(i).getName() + " is spoken by " + languagePopulation + " people (" + percentage + "% of world population)\n";
             }
         } else {
             // Loop from start of list (smallest) to n
@@ -792,7 +1005,15 @@ public class Report {
                 long languagePopulation = collectedLanguages.get(i).getPopulation();
                 float percentage = (float)languagePopulation / worldPopulation * 100;
                 percentage = (float)Math.round(percentage*100)/100; // 2 decimal places
-                lastGenerated += "\t" + (i + 1) + ".\t" + collectedLanguages.get(i).getName() + " is spoken by " + languagePopulation + " people (" + percentage + "% of world population)\n";
+
+                lastGenerated += String.format(
+                        "%-8s %-15.15s %10.10s %8.8s\n",
+                        (collectedLanguagesSize-i),
+                        collectedLanguages.get(i).getName(),
+                        languagePopulation,
+                        percentage
+                );
+//                lastGenerated += "\t" + (i + 1) + ".\t" + collectedLanguages.get(i).getName() + " is spoken by " + languagePopulation + " people (" + percentage + "% of world population)\n";
             }
         }
 
