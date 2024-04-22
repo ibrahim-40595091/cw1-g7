@@ -91,9 +91,14 @@ public class DB {
      * @throws SQLException
      * If a database access error occurs
      */
-    public ResultSet customQuery(String sql) throws SQLException {
-        Statement stmt = con.createStatement();
-        stmt.executeQuery(sql);
-        return stmt.getResultSet();
+    public ResultSet customQuery(String sql) {
+        try {
+            Statement stmt = con.createStatement();
+            stmt.executeQuery(sql);
+            return stmt.getResultSet();
+        } catch (SQLException e) {
+            System.err.println("Error fetching data from database");
+            return null;
+        }
     }
 }

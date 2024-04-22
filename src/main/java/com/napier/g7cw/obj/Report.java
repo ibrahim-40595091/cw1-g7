@@ -2,6 +2,7 @@ package com.napier.g7cw.obj;
 
 import com.napier.g7cw.db.*;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -78,7 +79,7 @@ public class Report {
      */
     public String generate(Country c) {
         return String.format(
-                "%-4.4s %-25.25s %-15.15s %-20.20s %-8.8s %-15.15s\n",
+                "%-4.4s %-25.25s %-15.15s %-20.20s %-12.12s %-20.20s\n",
                 c.getCode(),
                 c.getName(),
                 c.getContinent().getName(),
@@ -86,53 +87,6 @@ public class Report {
                 c.getPopulation(),
                 c.getCapital().getName()
         );
-    }
-
-
-    /**
-     * Report generator for country languages
-     * @param cl
-     * The provided languages to generate a report for
-     * @return
-     * A string containing the report generated
-     */
-    public String generate(CountryLanguages cl) {
-        // Catch empty languages
-        if (cl.getOfficial().isEmpty() && cl.getOther().isEmpty()) {
-            lastGenerated = "Country Languages Report:\n" +
-                    "\tNo languages found for " + CountryDBA.getCountry(db, cl.getCountryCode());
-            return lastGenerated;
-        }
-
-        lastGenerated = "Country Languages Report:\n" +
-                "\tCountry Code: " + cl.getCountryCode() + "\n" +
-                "\tOfficial Languages:\n";
-        for (Language l : cl.getOfficial()) {
-            lastGenerated += "\t\t" + l.getName() + " (" + l.getPercentage() + "%)\n";
-        }
-        lastGenerated += "\tOther Languages:\n";
-        for (Language l : cl.getOther()) {
-            lastGenerated += "\t\t" + l.getName() + " (" + l.getPercentage() + "%)\n";
-        }
-
-        return lastGenerated;
-    }
-
-
-    /**
-     * Report generator for a single language
-     * @param l
-     * The provided languages to generate a report for
-     * @return
-     * A string containing the report generated
-     */
-    public String generate(Language l) {
-        lastGenerated = "Language Report:\n" +
-                "\tName: " + l.getName() + "\n" +
-                "\tCountry Code: " + l.getCountryCode() + "\n" +
-                "\tIs Official: " + l.getIsOfficial() + "\n" +
-                "\tPercentage: " + l.getPercentage() + "\n";
-        return lastGenerated;
     }
 
 
@@ -159,7 +113,8 @@ public class Report {
 
         lastGenerated = "World Countries Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " populated first:\n";
         lastGenerated += String.format(
-                "%-4.4s %-25.25s %-15.15s %-20.20s %-8.8s %-15.15s\n",
+                "%-4.4s %-4.4s %-25.25s %-15.15s %-20.20s %-12.12s %-20.20s\n",
+                "Rank",
                 "Code",
                 "Name",
                 "Continent",
@@ -211,7 +166,8 @@ public class Report {
 
         lastGenerated = continent + " Countries Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " populated first:\n";
         lastGenerated += String.format(
-                "%-4.4s %-25.25s %-15.15s %-20.20s %-8.8s %-15.15s\n",
+                "%-4.4s %-4.4s %-25.25s %-15.15s %-20.20s %-12.12s %-20.20s\n",
+                "Rank",
                 "Code",
                 "Name",
                 "Continent",
@@ -264,7 +220,8 @@ public class Report {
 
         lastGenerated = region + " Countries Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " populated first:\n";
         lastGenerated += String.format(
-                "%-4.4s %-25.25s %-15.15s %-20.20s %-8.8s %-15.15s\n",
+                "%-4.4s %-4.4s %-25.25s %-15.15s %-20.20s %-12.12s %-20.20s\n",
+                "Rank",
                 "Code",
                 "Name",
                 "Continent",
@@ -714,15 +671,138 @@ public class Report {
 
 
     /**
+     * Report generator for the population of the world
+     * @return
+     * A string containing the report generated
+     */
+    public String getWorldPopulation() {
+        try {
+            ResultSet rs = db.customQuery("SELECT SUM(population) FROM country");
+            if (rs != null && rs.next()) {
+                lastGenerated = "World Population Report:\n" +
+                        "\tThe world population is " + rs.getLong(1);
+                return lastGenerated;
+            }
+        } catch (Exception ignored) {}
+        return "Error fetching world population";
+    }
+
+
+    /**
+     * Report generator for the population of a continent
+     * @param continent
+     * The continent to get the population of
+     * @return
+     * A string containing the report generated
+     */
+    public String getContinentPopulation(String continent) {
+        try {
+            ResultSet rs = db.customQuery("SELECT SUM(population) FROM country WHERE continent = '" + continent + "'");
+            if (rs != null && rs.next()) {
+                lastGenerated = "Continent " + continent + " Population Report:\n" +
+                        "\tThe population of " + continent + " is " + rs.getLong(1);
+                return lastGenerated;
+            }
+        } catch (Exception ignored) {
+        }
+        return "Error fetching continent population";
+    }
+
+
+    /**
+     * Report generator for the population of a region
+     * @param region
+     * The region to get the population of
+     * @return
+     * A string containing the report generated
+     */
+    public String getRegionPopulation(String region) {
+        try {
+            ResultSet rs = db.customQuery("SELECT SUM(population) FROM country WHERE region = '" + region + "'");
+            if (rs != null && rs.next()) {
+                lastGenerated = "Region " + region + " Population Report:\n" +
+                        "\tThe population of " + region + " is " + rs.getLong(1);
+                return lastGenerated;
+            }
+        } catch (Exception ignored) {
+        }
+        return "Error fetching region population";
+    }
+
+
+    /**
+     * Report generator for the population of a country
+     * @param countryCode
+     * The country to get the population of
+     * @return
+     * A string containing the report generated
+     */
+    public String getCountryPopulation(String countryCode) {
+        try {
+            ResultSet rs = db.customQuery("SELECT population FROM country WHERE code = '" + countryCode + "'");
+            if (rs != null && rs.next()) {
+                lastGenerated = "Country " + countryCode + " Population Report:\n" +
+                        "\tThe population of " + countryCode + " is " + rs.getLong(1);
+                return lastGenerated;
+            }
+        } catch (Exception ignored) {
+        }
+        return "Error fetching country population";
+    }
+
+
+    /**
+     * Report generator for the population of a district
+     * @param district
+     * The district to get the population of
+     * @return
+     * A string containing the report generated
+     */
+    public String getDistrictPopulation(String district) {
+        try {
+            ResultSet rs = db.customQuery("SELECT SUM(population) FROM city WHERE district = '" + district + "'");
+            if (rs != null && rs.next()) {
+                lastGenerated = "District " + district + " Population Report:\n" +
+                        "\tThe population of " + district + " is " + rs.getLong(1);
+                return lastGenerated;
+            }
+        } catch (Exception ignored) {
+        }
+        return "Error fetching district population";
+    }
+
+
+    /**
+     * Report generator for the population of a city
+     * @param cityName
+     * The city to get the population of
+     * @return
+     * A string containing the report generated
+     */
+    public String getCityPopulation(String cityName) {
+        try {
+            ResultSet rs = db.customQuery("SELECT population FROM city WHERE name = '" + cityName + "'");
+            if (rs != null && rs.next()) {
+                lastGenerated = "City " + cityName + " Population Report:\n" +
+                        "\tThe population of " + cityName + " is " + rs.getLong(1);
+                return lastGenerated;
+            }
+        } catch (Exception ignored) {
+        }
+        return "Error fetching city population";
+    }
+
+
+    /**
      * Report generator for all spoken languages in the world, sorted by most spoken
      * @param largestFirst
      * Whether to sort languages by most-spoken first
      * @return
      * A string containing the report generated
      */
-//    public String getWorldLanguagesSortMostSpoken(boolean largestFirst) {
-//        return getWorldLanguagesSortMostSpoken(largestFirst, -1);
-//    }
+    public String getWorldLanguagesSortMostSpoken(boolean largestFirst) {
+        return getWorldLanguagesSortMostSpoken(largestFirst, -1);
+    }
 
     /**
      * Report generator for N most spoken languages in the world
@@ -733,94 +813,94 @@ public class Report {
      * @return
      * A string containing the report generated
      */
-//    public String getWorldLanguagesSortMostSpoken(boolean largestFirst, int n) {
-//        // Get a list of all languages from all countries
-//        HashMap<String, CountryLanguages> languages = CountryLanguagesDBA.getAllCountryLanguages(db);
-//
-//        if (languages.isEmpty()) {
-//            lastGenerated = "No languages fetched from database.";
-//            return lastGenerated;
-//        }
-//
-//        // For each country's list of languages, collect them into a single list and tally all populations
-//        ArrayList<LanguageWithPopulation> worldLanguages = new ArrayList<>();
-//        for (CountryLanguages l : languages.values()) {
-//            ArrayList<Language> allCountryLanguages = l.getOfficial();
-//            allCountryLanguages.addAll(l.getOther());
-//
-//            for (Language countryLanguage : allCountryLanguages) {
-//                // Get the country this language is from
-//                    // Get its full population
-//                Country c = CountryDBA.getCountry(db, countryLanguage.getCountryCode());
-//                long countryPopulation = c.getPopulation();
-//
-//                // Get the scaled population based on the language percentage
-//                long languagePopulation = (long)(countryPopulation * (countryLanguage.getPercentage() / 100));
-//
-//
-//                // Find the index of the language in the list of all languages
-//                int worldLanguagesIndex = LanguageWithPopulation.indexOf(worldLanguages, countryLanguage.getName());
-//                if (worldLanguagesIndex == -1) {
-//                    // Add a new entry if one doesn't exist for this language
-//                    worldLanguages.add(new LanguageWithPopulation(countryLanguage.getName(), languagePopulation));
-//                    continue;
-//                }
-//
-//                // Get the current LanguageWithPopulation object and update its population value
-//                LanguageWithPopulation current = worldLanguages.get(worldLanguagesIndex);
-//                current.setPopulation(current.getPopulation() + languagePopulation);
-//                worldLanguages.set(worldLanguagesIndex, current); // Set new value
-//            }
-//        }
-//
-//        int worldLanguagesSize = worldLanguages.size();
-//        if (worldLanguagesSize == 0) {
-//            lastGenerated = "No world languages fetched from database.";
-//            return lastGenerated;
-//        }
-//        // LanguageWithPopulation is comparable by population
-//        // worldLanguages is now smallest->largest
-//        Collections.sort(worldLanguages);
-//
-//
-//
-//        // Get world population
-//        ArrayList<Country> allCountries = CountryDBA.getAllCountries(db);
-//        long worldPopulation = 0;
-//        for (Country c : allCountries) {
-//            worldPopulation += c.getPopulation();
-//        }
-//
-//
-//        lastGenerated = "World Languages Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " spoken first:\n";
-//        if (n == -1) {
-//            n = worldLanguagesSize;
-//        }
-//        n = Math.min(n, worldLanguagesSize);
-//
-//        if (largestFirst) {
-//            // Invert n if we want largest first
-//            n = (worldLanguagesSize) - n;
-//
-//            // Loop from end of list (largest) to n
-//            for (int i = worldLanguagesSize-1; i >= n; i--) {
-//                long languagePopulation = worldLanguages.get(i).getPopulation();
-//                float percentage = (float)languagePopulation / worldPopulation * 100;
-//                percentage = (float)Math.round(percentage * 100) /100; // 2 decimal places
-//                lastGenerated += "\t" + (worldLanguagesSize - i) + ".\t" + worldLanguages.get(i).getName() + " is spoken by " + languagePopulation + " people (" + percentage + "% of world population)\n";
-//            }
-//        } else {
-//            // Loop from start of list (smallest) to n
-//            for (int i = 0; i < n; i++) {
-//                long languagePopulation = worldLanguages.get(i).getPopulation();
-//                float percentage = (float)languagePopulation / worldPopulation * 100;
-//                percentage = (float)Math.round(percentage * 100) /100; // 2 decimal places
-//                lastGenerated += "\t" + (i + 1) + ".\t" + worldLanguages.get(i).getName() + " is spoken by " + languagePopulation + " people (" + percentage + "% of world population)\n";
-//            }
-//        }
-//
-//        return lastGenerated;
-//    }
+    public String getWorldLanguagesSortMostSpoken(boolean largestFirst, int n) {
+        // Get a list of all languages from all countries
+        HashMap<String, CountryLanguages> languages = CountryLanguagesDBA.getAllCountryLanguages(db);
+
+        if (languages.isEmpty()) {
+            lastGenerated = "No languages fetched from database.";
+            return lastGenerated;
+        }
+
+        // For each country's list of languages, collect them into a single list and tally all populations
+        ArrayList<LanguageWithPopulation> worldLanguages = new ArrayList<>();
+        for (CountryLanguages l : languages.values()) {
+            ArrayList<Language> allCountryLanguages = l.getOfficial();
+            allCountryLanguages.addAll(l.getOther());
+
+            for (Language countryLanguage : allCountryLanguages) {
+                // Get the country this language is from
+                    // Get its full population
+                Country c = CountryDBA.getCountry(db, countryLanguage.getCountryCode());
+                long countryPopulation = c.getPopulation();
+
+                // Get the scaled population based on the language percentage
+                long languagePopulation = (long)(countryPopulation * (countryLanguage.getPercentage() / 100));
+
+
+                // Find the index of the language in the list of all languages
+                int worldLanguagesIndex = LanguageWithPopulation.indexOf(worldLanguages, countryLanguage.getName());
+                if (worldLanguagesIndex == -1) {
+                    // Add a new entry if one doesn't exist for this language
+                    worldLanguages.add(new LanguageWithPopulation(countryLanguage.getName(), languagePopulation));
+                    continue;
+                }
+
+                // Get the current LanguageWithPopulation object and update its population value
+                LanguageWithPopulation current = worldLanguages.get(worldLanguagesIndex);
+                current.setPopulation(current.getPopulation() + languagePopulation);
+                worldLanguages.set(worldLanguagesIndex, current); // Set new value
+            }
+        }
+
+        int worldLanguagesSize = worldLanguages.size();
+        if (worldLanguagesSize == 0) {
+            lastGenerated = "No world languages fetched from database.";
+            return lastGenerated;
+        }
+        // LanguageWithPopulation is comparable by population
+        // worldLanguages is now smallest->largest
+        Collections.sort(worldLanguages);
+
+
+
+        // Get world population
+        ArrayList<Country> allCountries = CountryDBA.getAllCountries(db);
+        long worldPopulation = 0;
+        for (Country c : allCountries) {
+            worldPopulation += c.getPopulation();
+        }
+
+
+        lastGenerated = "World Languages Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " spoken first:\n";
+        if (n == -1) {
+            n = worldLanguagesSize;
+        }
+        n = Math.min(n, worldLanguagesSize);
+
+        if (largestFirst) {
+            // Invert n if we want largest first
+            n = (worldLanguagesSize) - n;
+
+            // Loop from end of list (largest) to n
+            for (int i = worldLanguagesSize-1; i >= n; i--) {
+                long languagePopulation = worldLanguages.get(i).getPopulation();
+                float percentage = (float)languagePopulation / worldPopulation * 100;
+                percentage = (float)Math.round(percentage * 100) /100; // 2 decimal places
+                lastGenerated += "\t" + (worldLanguagesSize - i) + ".\t" + worldLanguages.get(i).getName() + " is spoken by " + languagePopulation + " people (" + percentage + "% of world population)\n";
+            }
+        } else {
+            // Loop from start of list (smallest) to n
+            for (int i = 0; i < n; i++) {
+                long languagePopulation = worldLanguages.get(i).getPopulation();
+                float percentage = (float)languagePopulation / worldPopulation * 100;
+                percentage = (float)Math.round(percentage * 100) /100; // 2 decimal places
+                lastGenerated += "\t" + (i + 1) + ".\t" + worldLanguages.get(i).getName() + " is spoken by " + languagePopulation + " people (" + percentage + "% of world population)\n";
+            }
+        }
+
+        return lastGenerated;
+    }
 
 
 

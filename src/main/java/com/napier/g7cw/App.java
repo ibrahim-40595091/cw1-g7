@@ -38,7 +38,7 @@ public class App {
 
         // Any report can be generated with
         //      Report.someReportName(list, of, arguments)
-        int n = getNFromUser("Top N populated countries in the world");
+        int n = getNFromUser("Top N countries in the world by population");
         report.getWorldCountriesSortPopulation(true, n);
 
         // All report methods return a string with the report, but sometimes fail with the wrong arguments or database problems and report False or Null
@@ -54,6 +54,7 @@ public class App {
         // Disconnects from the database, returns True/False on success/failure but doesn't really matter
         //      since the program finishes here anyway
         db.disconnect();
+        scanner.close();
     }
 
 
@@ -82,10 +83,12 @@ public class App {
     public static int getNFromUser(String question) {
         int n;
 
+        // Loop until user gives valid input
         do {
             System.out.println(question);
             System.out.print("N: ");
-//            String choice = br.readLine();
+
+            /* Fails here for some reason, could be IntelliJ, Docker, Java, or something else */
             String choice = scanner.next();
             try {
                 n = Integer.parseInt(choice);
@@ -93,8 +96,6 @@ public class App {
                 n = -1;
             }
         } while (n < 0);
-
-//        scanner.close();
 
         return n;
     }
