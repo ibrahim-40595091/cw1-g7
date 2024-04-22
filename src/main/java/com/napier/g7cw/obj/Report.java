@@ -36,25 +36,36 @@ public class Report {
      * A string containing the report generated
      */
     public String generate(City c) {
-        lastGenerated = "City Report:\n" +
-                "\tName: " + c.getName() + "\n" +
-                // Use countryCode to get country from database
-                "\tCountry: " + CountryDBA.getCountry(db, c.getCountryCode()).getLocalName() + "\n" +
-                "\tPopulation: " + c.getPopulation() + "\n";
-        return lastGenerated;
+        return String.format(
+                "%-20.20s %-25.25s %-20.20s %-8.8s\n",
+                c.getName(),
+                CountryDBA.getCountry(db, c.getCountryCode()).getName(),
+                c.getDistrict(),
+                c.getPopulation()
+        );
     }
 
 
     /**
-     * Report generator for continents
+     * Report generator for capital cities
      * @param c
-     * The provided continent to generate a report for
+     * The provided city to generate a report for
+     * @param capital
+     * Boolean to indicate city is a capital
      * @return
      * A string containing the report generated
      */
-    public String generate(Continent c) {
-        lastGenerated = "Continent: " + c.getName();
-        return lastGenerated;
+    public String generate(City c, boolean capital) {
+        if (!capital) {
+            return generate(c);
+        }
+
+        return String.format(
+                "%-20.20s %-25.25s %-8.8s\n",
+                c.getName(),
+                CountryDBA.getCountry(db, c.getCountryCode()).getName(),
+                c.getPopulation()
+        );
     }
 
 
@@ -66,16 +77,15 @@ public class Report {
      * A string containing the report generated
      */
     public String generate(Country c) {
-        Report capitalReport = new Report(db);
-        Report countryLanguagesReport = new Report(db);
-        capitalReport.generate(c.getCapital());
-        lastGenerated = "Country Report:\n" +
-                "\tCode: " + c.getCode() + "\n" +
-                "\tName: " + c.getName() + "\n" +
-                "\tContinent: " + c.getContinent() + "\n" +
-                "\tRegion: " + c.getRegion() + "\n" +
-                "\tCapital: " + capitalReport.generate(c.getCapital()) + "\n";
-        return lastGenerated;
+        return String.format(
+                "%-4.4s %-25.25s %-15.15s %-20.20s %-8.8s %-15.15s\n",
+                c.getCode(),
+                c.getName(),
+                c.getContinent().getName(),
+                c.getRegion(),
+                c.getPopulation(),
+                c.getCapital().getName()
+        );
     }
 
 
@@ -147,11 +157,22 @@ public class Report {
             return lastGenerated;
         }
 
-        lastGenerated = "World Countries Report:\n";
+        lastGenerated = "World Countries Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " populated first:\n";
+        lastGenerated += String.format(
+                "%-4.4s %-25.25s %-15.15s %-20.20s %-8.8s %-15.15s\n",
+                "Code",
+                "Name",
+                "Continent",
+                "Region",
+                "Population",
+                "Capital"
+        );
+
         if (n == -1) { n = countries.size(); }
         for (int i=0; i<n; i++) {
             Country c = countries.get(i);
-            lastGenerated += "\t" + (i+1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
+            lastGenerated += String.format("%-4.4s ", (i+1)) + generate(c);
+//            lastGenerated += "\t" + (i+1) + ".\t" + c.getName() + "\n";
         }
 
         return lastGenerated;
@@ -188,11 +209,22 @@ public class Report {
             return lastGenerated;
         }
 
-        lastGenerated = continent + " Countries Report:\n";
+        lastGenerated = continent + " Countries Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " populated first:\n";
+        lastGenerated += String.format(
+                "%-4.4s %-25.25s %-15.15s %-20.20s %-8.8s %-15.15s\n",
+                "Code",
+                "Name",
+                "Continent",
+                "Region",
+                "Population",
+                "Capital"
+        );
+
         if (n == -1) { n = countries.size(); }
         for (int i=0; i<n; i++) {
             Country c = countries.get(i);
-            lastGenerated += "\t" + (i+1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
+            lastGenerated += String.format("%-4.4s ", (i+1)) + generate(c);
+//            lastGenerated += "\t" + (i+1) + ".\t" + c.getName() + "\n";
         }
 
         return lastGenerated;
@@ -230,11 +262,22 @@ public class Report {
             return lastGenerated;
         }
 
-        lastGenerated = region + " Countries Report:\n";
+        lastGenerated = region + " Countries Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " populated first:\n";
+        lastGenerated += String.format(
+                "%-4.4s %-25.25s %-15.15s %-20.20s %-8.8s %-15.15s\n",
+                "Code",
+                "Name",
+                "Continent",
+                "Region",
+                "Population",
+                "Capital"
+        );
+
         if (n == -1) { n = countries.size(); }
         for (int i=0; i<n; i++) {
             Country c = countries.get(i);
-            lastGenerated += "\t" + (i+1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
+            lastGenerated += String.format("%-4.4s ", (i+1)) + generate(c);
+//            lastGenerated += "\t" + (i+1) + ".\t" + c.getName() + "\n";
         }
 
         return lastGenerated;
@@ -268,14 +311,24 @@ public class Report {
             return lastGenerated;
         }
 
-        lastGenerated = "World Cities Report:\n";
+        lastGenerated = "World Cities Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " populated first:\n";
+        lastGenerated += String.format(
+                "%-8s %-20.20s %-25.25s %-20.20s %-10.10s\n",
+                "Rank",
+                "Name",
+                "Country",
+                "District",
+                "Population"
+        );
+
         if (n == -1) {
             n = cities.size();
         }
         n = Math.min(n, cities.size());
         for (int i = 0; i < n; i++) {
             City c = cities.get(i);
-            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
+            lastGenerated += String.format("%-8.8s ", (i+1)) + generate(c);
+//            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
         }
 
         return lastGenerated;
@@ -313,14 +366,24 @@ public class Report {
             return lastGenerated;
         }
 
-        lastGenerated = continent + " Cities Report:\n";
+        lastGenerated = continent + " Cities Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " populated first:\n";
+        lastGenerated += String.format(
+                "%-8s %-20.20s %-25.25s %-20.20s %-10.10s\n",
+                "Rank",
+                "Name",
+                "Country",
+                "District",
+                "Population"
+        );
+
         if (n == -1) {
             n = cities.size();
         }
         n = Math.min(n, cities.size());
         for (int i = 0; i < n; i++) {
             City c = cities.get(i);
-            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
+            lastGenerated += String.format("%-8.8s ", (i+1)) + generate(c);
+//            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
         }
 
         return lastGenerated;
@@ -358,14 +421,23 @@ public class Report {
             return lastGenerated;
         }
 
-        lastGenerated = region + " Cities Report:\n";
+        lastGenerated = region + " Cities Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " populated first:\n";
+        lastGenerated += String.format(
+                "%-8s %-20.20s %-25.25s %-20.20s %-10.10s\n",
+                "Rank",
+                "Name",
+                "Country",
+                "District",
+                "Population"
+        );
+
         if (n == -1) {
             n = cities.size();
         }
         n = Math.min(n, cities.size());
         for (int i = 0; i < n; i++) {
             City c = cities.get(i);
-            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
+            lastGenerated += String.format("%-8.8s ", (i+1)) + generate(c);
         }
 
         return lastGenerated;
@@ -374,15 +446,15 @@ public class Report {
 
     /**
      * Report generator for all cities in a specific country, sorted by population
-     * @param country
+     * @param countryCode
      * The country to get cities from
      * @param largestFirst
      * Whether to sort the cities by largest population first
      * @return
      * A string containing the report generated
      */
-    public String getCountryCitiesSortPopulation(String country, boolean largestFirst) {
-        return getCountryCitiesSortPopulation(country, largestFirst, -1);
+    public String getCountryCitiesSortPopulation(String countryCode, boolean largestFirst) {
+        return getCountryCitiesSortPopulation(countryCode, largestFirst, -1);
     }
     /**
      * Report generator for N cities in a specific country, sorted by population
@@ -403,14 +475,24 @@ public class Report {
             return lastGenerated;
         }
 
-        lastGenerated = country + " Cities Report:\n";
+        lastGenerated = country + " Cities Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " populated first:\n";
+        lastGenerated += String.format(
+                "%-8s %-20.20s %-25.25s %-20.20s %-10.10s\n",
+                "Rank",
+                "Name",
+                "Country",
+                "District",
+                "Population"
+        );
+
         if (n == -1) {
             n = cities.size();
         }
         n = Math.min(n, cities.size());
         for (int i = 0; i < n; i++) {
             City c = cities.get(i);
-            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
+            lastGenerated += String.format("%-8.8s ", (i+1)) + generate(c);
+//            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
         }
 
         return lastGenerated;
@@ -448,14 +530,24 @@ public class Report {
             return lastGenerated;
         }
 
-        lastGenerated = district + " Cities Report:\n";
+        lastGenerated = district + " Cities Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " populated first:\n";
+        lastGenerated += String.format(
+                "%-8s %-20.20s %-25.25s %-20.20s %-10.10s\n",
+                "Rank",
+                "Name",
+                "Country",
+                "District",
+                "Population"
+        );
+
         if (n == -1) {
             n = cities.size();
         }
         n = Math.min(n, cities.size());
         for (int i = 0; i < n; i++) {
             City c = cities.get(i);
-            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
+            lastGenerated += String.format("%-8.8s ", (i+1)) + generate(c);
+//            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
         }
 
         return lastGenerated;
@@ -489,14 +581,23 @@ public class Report {
             return lastGenerated;
         }
 
-        lastGenerated = "World Capital Cities Report:\n";
+        lastGenerated = "World Capital Cities Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " populated first:\n";
+        lastGenerated += String.format(
+                "%-8s %-20.20s %-25.25s %-10.10s\n",
+                "Rank",
+                "Name",
+                "Country",
+                "Population"
+        );
+
         if (n == -1) {
             n = cities.size();
         }
         n = Math.min(n, cities.size());
         for (int i = 0; i < n; i++) {
             City c = cities.get(i);
-            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
+            lastGenerated += String.format("%-8.8s ", (i+1)) + generate(c, true);
+//            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
         }
 
         return lastGenerated;
@@ -534,14 +635,23 @@ public class Report {
             return lastGenerated;
         }
 
-        lastGenerated = continent + " Capital Cities Report:\n";
+        lastGenerated = continent + " Capital Cities Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " populated first:\n";
+        lastGenerated += String.format(
+                "%-8s %-20.20s %-25.25s %-10.10s\n",
+                "Rank",
+                "Name",
+                "Country",
+                "Population"
+        );
+
         if (n == -1) {
             n = cities.size();
         }
         n = Math.min(n, cities.size());
         for (int i = 0; i < n; i++) {
             City c = cities.get(i);
-            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
+            lastGenerated += String.format("%-8.8s ", (i+1)) + generate(c, true);
+//            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
         }
 
         return lastGenerated;
@@ -580,14 +690,23 @@ public class Report {
             return lastGenerated;
         }
 
-        lastGenerated = region + " Capital Cities Report:\n";
+        lastGenerated = region + " Capital Cities Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " populated first:\n";
+        lastGenerated += String.format(
+                "%-8s %-20.20s %-25.25s %-10.10s\n",
+                "Rank",
+                "Name",
+                "Country",
+                "Population"
+        );
+
         if (n == -1) {
             n = cities.size();
         }
         n = Math.min(n, cities.size());
         for (int i = 0; i < n; i++) {
             City c = cities.get(i);
-            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
+            lastGenerated += String.format("%-8.8s ", (i+1)) + generate(c, true);
+//            lastGenerated += "\t" + (i + 1) + ".\t" + c.getName() + " (" + c.getPopulation() + ")\n";
         }
 
         return lastGenerated;
@@ -601,9 +720,9 @@ public class Report {
      * @return
      * A string containing the report generated
      */
-    public String getWorldLanguagesSortMostSpoken(boolean largestFirst) {
-        return getWorldLanguagesSortMostSpoken(largestFirst, -1);
-    }
+//    public String getWorldLanguagesSortMostSpoken(boolean largestFirst) {
+//        return getWorldLanguagesSortMostSpoken(largestFirst, -1);
+//    }
 
     /**
      * Report generator for N most spoken languages in the world
@@ -614,94 +733,94 @@ public class Report {
      * @return
      * A string containing the report generated
      */
-    public String getWorldLanguagesSortMostSpoken(boolean largestFirst, int n) {
-        // Get a list of all languages from all countries
-        HashMap<String, CountryLanguages> languages = CountryLanguagesDBA.getAllCountryLanguages(db);
-
-        if (languages.isEmpty()) {
-            lastGenerated = "No languages fetched from database.";
-            return lastGenerated;
-        }
-
-        // For each country's list of languages, collect them into a single list and tally all populations
-        ArrayList<LanguageWithPopulation> worldLanguages = new ArrayList<>();
-        for (CountryLanguages l : languages.values()) {
-            ArrayList<Language> allCountryLanguages = l.getOfficial();
-            allCountryLanguages.addAll(l.getOther());
-
-            for (Language countryLanguage : allCountryLanguages) {
-                // Get the country this language is from
-                    // Get its full population
-                Country c = CountryDBA.getCountry(db, countryLanguage.getCountryCode());
-                long countryPopulation = c.getPopulation();
-
-                // Get the scaled population based on the language percentage
-                long languagePopulation = (long)(countryPopulation * (countryLanguage.getPercentage() / 100));
-
-
-                // Find the index of the language in the list of all languages
-                int worldLanguagesIndex = LanguageWithPopulation.indexOf(worldLanguages, countryLanguage.getName());
-                if (worldLanguagesIndex == -1) {
-                    // Add a new entry if one doesn't exist for this language
-                    worldLanguages.add(new LanguageWithPopulation(countryLanguage.getName(), languagePopulation));
-                    continue;
-                }
-
-                // Get the current LanguageWithPopulation object and update its population value
-                LanguageWithPopulation current = worldLanguages.get(worldLanguagesIndex);
-                current.setPopulation(current.getPopulation() + languagePopulation);
-                worldLanguages.set(worldLanguagesIndex, current); // Set new value
-            }
-        }
-
-        int worldLanguagesSize = worldLanguages.size();
-        if (worldLanguagesSize == 0) {
-            lastGenerated = "No world languages fetched from database.";
-            return lastGenerated;
-        }
-        // LanguageWithPopulation is comparable by population
-        // worldLanguages is now smallest->largest
-        Collections.sort(worldLanguages);
-
-
-
-        // Get world population
-        ArrayList<Country> allCountries = CountryDBA.getAllCountries(db);
-        long worldPopulation = 0;
-        for (Country c : allCountries) {
-            worldPopulation += c.getPopulation();
-        }
-
-
-        lastGenerated = "World Languages Report:\n";
-        if (n == -1) {
-            n = worldLanguagesSize;
-        }
-        n = Math.min(n, worldLanguagesSize);
-
-        if (largestFirst) {
-            // Invert n if we want largest first
-            n = (worldLanguagesSize) - n;
-
-            // Loop from end of list (largest) to n
-            for (int i = worldLanguagesSize-1; i >= n; i--) {
-                long languagePopulation = worldLanguages.get(i).getPopulation();
-                float percentage = (float)languagePopulation / worldPopulation * 100;
-                percentage = (float)Math.round(percentage * 100) /100; // 2 decimal places
-                lastGenerated += "\t" + (worldLanguagesSize - i) + ".\t" + worldLanguages.get(i).getName() + " is spoken by " + languagePopulation + " people (" + percentage + "% of world population)\n";
-            }
-        } else {
-            // Loop from start of list (smallest) to n
-            for (int i = 0; i < n; i++) {
-                long languagePopulation = worldLanguages.get(i).getPopulation();
-                float percentage = (float)languagePopulation / worldPopulation * 100;
-                percentage = (float)Math.round(percentage * 100) /100; // 2 decimal places
-                lastGenerated += "\t" + (i + 1) + ".\t" + worldLanguages.get(i).getName() + " is spoken by " + languagePopulation + " people (" + percentage + "% of world population)\n";
-            }
-        }
-
-        return lastGenerated;
-    }
+//    public String getWorldLanguagesSortMostSpoken(boolean largestFirst, int n) {
+//        // Get a list of all languages from all countries
+//        HashMap<String, CountryLanguages> languages = CountryLanguagesDBA.getAllCountryLanguages(db);
+//
+//        if (languages.isEmpty()) {
+//            lastGenerated = "No languages fetched from database.";
+//            return lastGenerated;
+//        }
+//
+//        // For each country's list of languages, collect them into a single list and tally all populations
+//        ArrayList<LanguageWithPopulation> worldLanguages = new ArrayList<>();
+//        for (CountryLanguages l : languages.values()) {
+//            ArrayList<Language> allCountryLanguages = l.getOfficial();
+//            allCountryLanguages.addAll(l.getOther());
+//
+//            for (Language countryLanguage : allCountryLanguages) {
+//                // Get the country this language is from
+//                    // Get its full population
+//                Country c = CountryDBA.getCountry(db, countryLanguage.getCountryCode());
+//                long countryPopulation = c.getPopulation();
+//
+//                // Get the scaled population based on the language percentage
+//                long languagePopulation = (long)(countryPopulation * (countryLanguage.getPercentage() / 100));
+//
+//
+//                // Find the index of the language in the list of all languages
+//                int worldLanguagesIndex = LanguageWithPopulation.indexOf(worldLanguages, countryLanguage.getName());
+//                if (worldLanguagesIndex == -1) {
+//                    // Add a new entry if one doesn't exist for this language
+//                    worldLanguages.add(new LanguageWithPopulation(countryLanguage.getName(), languagePopulation));
+//                    continue;
+//                }
+//
+//                // Get the current LanguageWithPopulation object and update its population value
+//                LanguageWithPopulation current = worldLanguages.get(worldLanguagesIndex);
+//                current.setPopulation(current.getPopulation() + languagePopulation);
+//                worldLanguages.set(worldLanguagesIndex, current); // Set new value
+//            }
+//        }
+//
+//        int worldLanguagesSize = worldLanguages.size();
+//        if (worldLanguagesSize == 0) {
+//            lastGenerated = "No world languages fetched from database.";
+//            return lastGenerated;
+//        }
+//        // LanguageWithPopulation is comparable by population
+//        // worldLanguages is now smallest->largest
+//        Collections.sort(worldLanguages);
+//
+//
+//
+//        // Get world population
+//        ArrayList<Country> allCountries = CountryDBA.getAllCountries(db);
+//        long worldPopulation = 0;
+//        for (Country c : allCountries) {
+//            worldPopulation += c.getPopulation();
+//        }
+//
+//
+//        lastGenerated = "World Languages Report with " + (n>0 ? n + " " : "") + (largestFirst ? "most" : "least") + " spoken first:\n";
+//        if (n == -1) {
+//            n = worldLanguagesSize;
+//        }
+//        n = Math.min(n, worldLanguagesSize);
+//
+//        if (largestFirst) {
+//            // Invert n if we want largest first
+//            n = (worldLanguagesSize) - n;
+//
+//            // Loop from end of list (largest) to n
+//            for (int i = worldLanguagesSize-1; i >= n; i--) {
+//                long languagePopulation = worldLanguages.get(i).getPopulation();
+//                float percentage = (float)languagePopulation / worldPopulation * 100;
+//                percentage = (float)Math.round(percentage * 100) /100; // 2 decimal places
+//                lastGenerated += "\t" + (worldLanguagesSize - i) + ".\t" + worldLanguages.get(i).getName() + " is spoken by " + languagePopulation + " people (" + percentage + "% of world population)\n";
+//            }
+//        } else {
+//            // Loop from start of list (smallest) to n
+//            for (int i = 0; i < n; i++) {
+//                long languagePopulation = worldLanguages.get(i).getPopulation();
+//                float percentage = (float)languagePopulation / worldPopulation * 100;
+//                percentage = (float)Math.round(percentage * 100) /100; // 2 decimal places
+//                lastGenerated += "\t" + (i + 1) + ".\t" + worldLanguages.get(i).getName() + " is spoken by " + languagePopulation + " people (" + percentage + "% of world population)\n";
+//            }
+//        }
+//
+//        return lastGenerated;
+//    }
 
 
 
@@ -767,7 +886,6 @@ public class Report {
         Collections.sort(collectedLanguages);
 
 
-
         // Get world population
         ArrayList<Country> allCountries = CountryDBA.getAllCountries(db);
         long worldPopulation = 0;
@@ -776,15 +894,30 @@ public class Report {
         }
 
 
+        lastGenerated = "World Languages Report with " + (largestFirst ? "most" : "least") + " spoken first:\n";
+        lastGenerated += String.format(
+                "%-8s %-15.15s %10.10s %8.8s\n",
+                "Rank",
+                "Name",
+                "Spoken by",
+                "% world"
+        );
 
-        lastGenerated = "World Languages Report:\n";
         if (largestFirst) {
             // Loop from end of list (largest) to n
             for (int i = collectedLanguagesSize - 1; i >= 0; i--) {
                 long languagePopulation = collectedLanguages.get(i).getPopulation();
                 float percentage = (float)languagePopulation / worldPopulation * 100;
                 percentage = (float)Math.round(percentage * 100) /100; // 2 decimal places
-                lastGenerated += "\t" + (collectedLanguagesSize-i) + ".\t" + collectedLanguages.get(i).getName() + " is spoken by " + languagePopulation + " people (" + percentage + "% of world population)\n";
+
+                lastGenerated += String.format(
+                        "%-8s %-15.15s %10.10s %8.8s\n",
+                        (collectedLanguagesSize-i),
+                        collectedLanguages.get(i).getName(),
+                        languagePopulation,
+                        percentage
+                );
+//                lastGenerated += "\t" + (collectedLanguagesSize-i) + ".\t" + collectedLanguages.get(i).getName() + " is spoken by " + languagePopulation + " people (" + percentage + "% of world population)\n";
             }
         } else {
             // Loop from start of list (smallest) to n
@@ -792,7 +925,15 @@ public class Report {
                 long languagePopulation = collectedLanguages.get(i).getPopulation();
                 float percentage = (float)languagePopulation / worldPopulation * 100;
                 percentage = (float)Math.round(percentage*100)/100; // 2 decimal places
-                lastGenerated += "\t" + (i + 1) + ".\t" + collectedLanguages.get(i).getName() + " is spoken by " + languagePopulation + " people (" + percentage + "% of world population)\n";
+
+                lastGenerated += String.format(
+                        "%-8s %-15.15s %10.10s %8.8s\n",
+                        (collectedLanguagesSize-i),
+                        collectedLanguages.get(i).getName(),
+                        languagePopulation,
+                        percentage
+                );
+//                lastGenerated += "\t" + (i + 1) + ".\t" + collectedLanguages.get(i).getName() + " is spoken by " + languagePopulation + " people (" + percentage + "% of world population)\n";
             }
         }
 
