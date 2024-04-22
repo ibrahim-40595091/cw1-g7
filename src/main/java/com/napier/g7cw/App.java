@@ -38,8 +38,8 @@ public class App {
 
         // Any report can be generated with
         //      Report.someReportName(list, of, arguments)
-        int n = getNFromUser("Top N countries in the world by population");
-        report.getWorldCountriesSortPopulation(true, n);
+//        int n = getNFromUser("Top N countries in the world by population");
+        report.getRegionCapitalCitiesSortPopulation("North America", true);
 
         // All report methods return a string with the report, but sometimes fail with the wrong arguments or database problems and report False or Null
 
